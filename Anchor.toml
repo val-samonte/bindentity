@@ -1,0 +1,16 @@
+[features]
+seeds = false
+skip-lint = false
+[programs.devnet]
+mobile_number_identity = "FQvpwXKBzpt9QzMUwMnnKXe4PkE4XPq6dgujiPhCfjGE"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "./keys/authority.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+init = "yarn run ts-node --project ./tsconfig.json scripts/init.ts"
