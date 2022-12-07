@@ -1,10 +1,11 @@
-use anchor_lang::{prelude::*, system_program};
+use anchor_lang::{prelude::*, solana_program::hash::hashv, system_program};
 
 use crate::state::{Global, Identity};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateIdentityParams {
     phone_number: String,
+    series: String,
 }
 
 #[derive(Accounts)]
@@ -15,10 +16,11 @@ pub struct CreateIdentity<'info> {
         payer = owner,
         seeds = [
             "identity".as_bytes(),
-            params.phone_number.as_bytes()
+            params.series.as_bytes(),
+            params.phone_number.as_bytes(),
         ],
         bump,
-        space = 8 + 1 + 32,
+        space = 8 + 1 + 32 + 7 + 32,
     )]
     pub identity: Account<'info, Identity>,
 
@@ -48,7 +50,7 @@ pub struct CreateIdentity<'info> {
 
 pub fn create_identity_handler(
     ctx: Context<CreateIdentity>,
-    _: CreateIdentityParams,
+    params: CreateIdentityParams,
 ) -> Result<()> {
     let identity = &mut ctx.accounts.identity;
     let owner = &mut ctx.accounts.owner;
@@ -65,6 +67,10 @@ pub fn create_identity_handler(
 
     identity.bump = *ctx.bumps.get("identity").unwrap();
     identity.owner = owner.key();
+    identity.series = params.series.as_bytes()[..7].try_into().unwrap();
+    identity.id = hashv(&[params.phone_number.into_bytes().as_ref()]).to_bytes()[..32]
+        .try_into()
+        .unwrap();
 
     Ok(())
 }

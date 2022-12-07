@@ -5,7 +5,7 @@ pub mod state;
 
 pub use instructions::*;
 
-declare_id!("FQvpwXKBzpt9QzMUwMnnKXe4PkE4XPq6dgujiPhCfjGE");
+declare_id!("9ijS6LnNrUmvPHePx8Np9hvXtsf5bT3xC6VQUhAsQsWV");
 
 #[program]
 pub mod mobile_number_identity {
