@@ -22,14 +22,18 @@ describe('mobile-number-identity', () => {
 	const validator = Keypair.fromSecretKey(new Uint8Array(validatorKp));
 
 	it('should register an identity', async () => {
-		const randomPhoneNumber = Math.floor(Math.random() * 11) + '';
-		const series = '2022340';
+		const randomPhoneNumber = Math.floor(Math.random() * 100_000_000_000) + '';
+		const timestamp = Math.floor(new Date('2100').getTime() / 1000);
+		const params = {
+			phoneNumber: randomPhoneNumber,
+			timestamp,
+		};
 		const owner = Keypair.generate();
 
 		const [identityPda] = findProgramAddressSync(
 			[
 				Buffer.from('identity'),
-				Buffer.from(series),
+				Buffer.from(timestamp + ''),
 				Buffer.from(randomPhoneNumber),
 			],
 			program.programId
@@ -46,30 +50,40 @@ describe('mobile-number-identity', () => {
 			systemProgram: SystemProgram.programId,
 		};
 
-		const connection = program.provider.connection;
-		const latestBlockHash = await connection.getLatestBlockhash();
-		const signature = await connection.requestAirdrop(
-			owner.publicKey,
-			LAMPORTS_PER_SOL
-		);
+		console.log('Params:', JSON.stringify(params, null, 2));
+		console.log('Accounts:', JSON.stringify(accounts, null, 2));
 
-		await connection.confirmTransaction({
-			blockhash: latestBlockHash.blockhash,
-			lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-			signature,
-		});
+		try {
+			const connection = program.provider.connection;
+			const latestBlockHash = await connection.getLatestBlockhash();
+			const signature = await connection.requestAirdrop(
+				owner.publicKey,
+				LAMPORTS_PER_SOL
+			);
 
-		await program.methods
-			.createIdentity({
-				phoneNumber: randomPhoneNumber,
-				series,
-			})
-			.accounts(accounts)
-			.signers([owner, validator])
-			.rpc();
+			await connection.confirmTransaction({
+				blockhash: latestBlockHash.blockhash,
+				lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+				signature,
+			});
+		} catch (e) {
+			console.log(e);
+			throw new Error(e);
+		}
 
-		const result = await program.account.identity.fetch(identityPda);
+		try {
+			await program.methods
+				.createIdentity(params)
+				.accounts(accounts)
+				.signers([owner, validator])
+				.rpc();
 
-		assert.ok(owner.publicKey.equals(result.owner));
+			const result = await program.account.identity.fetch(identityPda);
+			console.log(JSON.stringify(result, null, 2));
+			assert.ok(owner.publicKey.equals(result.owner));
+		} catch (e) {
+			console.log(e);
+			throw new Error(e);
+		}
 	});
 });
