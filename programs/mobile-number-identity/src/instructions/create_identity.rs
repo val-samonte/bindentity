@@ -1,10 +1,10 @@
 use anchor_lang::{prelude::*, solana_program::hash::hashv, system_program};
 
-use crate::state::{Global, Identity};
+use crate::state::{Global, Identity, Link};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateIdentityParams {
-    phone_number: String,
+    id: String,
     timestamp: u32,
 }
 
@@ -17,12 +17,25 @@ pub struct CreateIdentity<'info> {
         seeds = [
             "identity".as_bytes(),
             params.timestamp.to_string().as_bytes(),
-            params.phone_number.as_bytes(),
+            params.id.as_bytes(),
         ],
         bump,
-        space = 8 + 1 + 32 + 32 + 4 + (1 + 32),
+        space = 8 + 1 + 32 + 32 + 4,
     )]
     pub identity: Account<'info, Identity>,
+
+    #[account(
+        init,
+        payer = owner,
+        seeds = [
+            "link".as_bytes(),
+            params.id.as_bytes(),
+            owner.key().as_ref(),
+        ],
+        bump,
+        space = 8 + 1 + 32
+    )]
+    pub link: Account<'info, Link>,
 
     #[account(mut)]
     pub owner: Signer<'info>,
@@ -68,7 +81,7 @@ pub fn create_identity_handler(
     identity.bump = *ctx.bumps.get("identity").unwrap();
     identity.owner = owner.key();
     identity.timestamp = params.timestamp;
-    identity.id = hashv(&[params.phone_number.as_bytes().as_ref()])
+    identity.id = hashv(&[params.id.as_bytes().as_ref()])
         .to_bytes()
         .try_into()
         .unwrap();
