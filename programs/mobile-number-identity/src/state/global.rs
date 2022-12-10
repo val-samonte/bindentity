@@ -15,5 +15,5 @@ pub struct Global {
     pub treasury: Pubkey,
 
     /// Amount of fee being collected when a user registers his / her wallet (8)
-    pub creation_fee: u64,
+    pub service_fee: u64,
 }

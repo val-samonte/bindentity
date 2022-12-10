@@ -6,7 +6,7 @@ use crate::{program::MobileNumberIdentity, state::Global};
 pub struct InitializeParams {
     pub validator: Pubkey,
     pub treasury: Pubkey,
-    pub creation_fee: u64,
+    pub service_fee: u64,
 }
 
 #[derive(Accounts)]
@@ -46,7 +46,7 @@ pub fn initialize_handler(ctx: Context<Initialize>, params: InitializeParams) ->
     global.authority = ctx.accounts.authority.key();
     global.validator = params.validator.key();
     global.treasury = params.treasury.key();
-    global.creation_fee = params.creation_fee;
+    global.service_fee = params.service_fee;
 
     Ok(())
 }

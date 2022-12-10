@@ -26,3 +26,12 @@ pub mod mobile_number_identity {
         update_config_handler(ctx, params)
     }
 }
+
+#[error_code]
+pub enum CustomError {
+    #[msg("Hash of the ID does not match")]
+    InvalidIdHash,
+
+    #[msg("Signer has no void authority")]
+    VoidUnauthorized,
+}

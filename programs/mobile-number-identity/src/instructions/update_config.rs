@@ -7,7 +7,7 @@ pub struct UpdateConfigParams {
     pub authority: Option<Pubkey>,
     pub validator: Option<Pubkey>,
     pub treasury: Option<Pubkey>,
-    pub creation_fee: Option<u64>,
+    pub service_fee: Option<u64>,
 }
 
 #[derive(Accounts)]
@@ -30,9 +30,9 @@ pub struct UpdateConfig<'info> {
 pub fn update_config_handler(ctx: Context<UpdateConfig>, params: UpdateConfigParams) -> Result<()> {
     let global = &mut ctx.accounts.global;
 
-    match params.creation_fee {
-        Some(creation_fee) => {
-            global.creation_fee = creation_fee;
+    match params.service_fee {
+        Some(service_fee) => {
+            global.service_fee = service_fee;
         }
         None => (),
     }

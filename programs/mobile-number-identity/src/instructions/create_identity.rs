@@ -29,11 +29,11 @@ pub struct CreateIdentity<'info> {
         payer = owner,
         seeds = [
             "link".as_bytes(),
-            params.id.as_bytes(),
             owner.key().as_ref(),
+            params.id.as_bytes(),
         ],
         bump,
-        space = 8 + 1 + 32
+        space = 8 + 1 + 32,
     )]
     pub link: Account<'info, Link>,
 
@@ -66,6 +66,7 @@ pub fn create_identity_handler(
     params: CreateIdentityParams,
 ) -> Result<()> {
     let identity = &mut ctx.accounts.identity;
+    let link = &mut ctx.accounts.link;
     let owner = &mut ctx.accounts.owner;
 
     let cpi_ctx = CpiContext::new(
@@ -76,7 +77,10 @@ pub fn create_identity_handler(
         },
     );
 
-    system_program::transfer(cpi_ctx, ctx.accounts.global.creation_fee)?;
+    system_program::transfer(cpi_ctx, ctx.accounts.global.service_fee)?;
+
+    link.bump = *ctx.bumps.get("link").unwrap();
+    link.identity = identity.key();
 
     identity.bump = *ctx.bumps.get("identity").unwrap();
     identity.owner = owner.key();
