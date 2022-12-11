@@ -6,6 +6,7 @@ use crate::state::{Global, Identity, Link};
 pub struct CreateIdentityParams {
     id: String,
     timestamp: u32,
+    fee: u64,
 }
 
 #[derive(Accounts)]

@@ -10,3 +10,9 @@ pub struct Link {
     /// Identity which this link is related to. (32)
     pub identity: Pubkey,
 }
+
+impl Link {
+    pub fn len() -> usize {
+        8 + 1 + 32
+    }
+}

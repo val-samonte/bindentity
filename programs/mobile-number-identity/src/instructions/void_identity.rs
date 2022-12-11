@@ -45,9 +45,9 @@ pub struct VoidIdentity<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// User can void an identity in 2 ways:
-/// 1. If the validator already verified that the owner indeed owns the id
-/// 2. If the identity account has the same owner field
+/// An identity can be voided in 2 ways:
+/// 1. If the owner of the identity is also the signer
+/// 2. If the validator checked that indeed the user is the owner of the ID
 pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
     let identity = &ctx.accounts.identity;
     let link = &mut ctx.accounts.link;

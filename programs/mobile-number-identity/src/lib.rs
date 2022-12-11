@@ -5,7 +5,7 @@ pub mod state;
 
 pub use instructions::*;
 
-declare_id!("9ijS6LnNrUmvPHePx8Np9hvXtsf5bT3xC6VQUhAsQsWV");
+declare_id!("8sEsVs5bwJj6S4cWibMJ9nouTMwzhAyoXruNXbykameX");
 
 #[program]
 pub mod mobile_number_identity {
@@ -20,6 +20,10 @@ pub mod mobile_number_identity {
         params: CreateIdentityParams,
     ) -> Result<()> {
         create_identity_handler(ctx, params)
+    }
+
+    pub fn void_identity(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
+        void_identity_handler(ctx, params)
     }
 
     pub fn update_config(ctx: Context<UpdateConfig>, params: UpdateConfigParams) -> Result<()> {

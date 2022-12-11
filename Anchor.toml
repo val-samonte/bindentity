@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.devnet]
-mobile_number_identity = "9ijS6LnNrUmvPHePx8Np9hvXtsf5bT3xC6VQUhAsQsWV"
+mobile_number_identity = "8sEsVs5bwJj6S4cWibMJ9nouTMwzhAyoXruNXbykameX"
 
 [registry]
 url = "https://api.apr.dev"
