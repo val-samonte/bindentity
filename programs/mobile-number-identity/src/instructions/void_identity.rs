@@ -1,7 +1,7 @@
 use anchor_lang::{prelude::*, solana_program::hash::hashv, system_program};
 
 use crate::{
-    state::{Global, Identity, Link},
+    state::{Global, Identity, Link, Provider, Validator},
     CustomError,
 };
 
@@ -25,9 +25,20 @@ pub struct VoidIdentity<'info> {
     pub signer: Signer<'info>,
 
     #[account(
-        constraint = validator.key() == global.validator.key()
+        constraint = validator_signer.key() == validator.signer.key(),
     )]
-    pub validator: Signer<'info>,
+    pub validator_signer: Signer<'info>,
+
+    #[account(
+        constraint = validator.provider.key() == provider.key(),
+        constraint = validator.flags & 1 == 1, // @ CustomError::ValidatorDisabled
+    )]
+    pub validator: Box<Account<'info, Validator>>,
+
+    #[account(
+        constraint = provider.flags & 1 == 1, // @ CustomError::ProviderDisabled
+    )]
+    pub provider: Box<Account<'info, Provider>>,
 
     #[account(
         mut,

@@ -5,9 +5,9 @@ use crate::state::Global;
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct UpdateConfigParams {
     pub authority: Option<Pubkey>,
-    pub validator: Option<Pubkey>,
     pub treasury: Option<Pubkey>,
     pub service_fee: Option<u64>,
+    pub provider_fee: Option<u64>,
 }
 
 #[derive(Accounts)]
@@ -37,16 +37,16 @@ pub fn update_config_handler(ctx: Context<UpdateConfig>, params: UpdateConfigPar
         None => (),
     }
 
-    match params.treasury {
-        Some(treasury) => {
-            global.treasury = treasury.key();
+    match params.provider_fee {
+        Some(provider_fee) => {
+            global.provider_fee = provider_fee;
         }
         None => (),
     }
 
-    match params.validator {
-        Some(validator) => {
-            global.validator = validator.key();
+    match params.treasury {
+        Some(treasury) => {
+            global.treasury = treasury.key();
         }
         None => (),
     }

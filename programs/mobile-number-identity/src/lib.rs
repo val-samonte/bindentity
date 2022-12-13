@@ -15,6 +15,20 @@ pub mod mobile_number_identity {
         initialize_handler(ctx, params)
     }
 
+    pub fn create_provider(
+        ctx: Context<CreateProvider>,
+        params: CreateProviderParams,
+    ) -> Result<()> {
+        create_provider_handler(ctx, params)
+    }
+
+    pub fn create_validator(
+        ctx: Context<CreateValidator>,
+        params: CreateValidatorParams,
+    ) -> Result<()> {
+        create_validator_handler(ctx, params)
+    }
+
     pub fn create_identity(
         ctx: Context<CreateIdentity>,
         params: CreateIdentityParams,

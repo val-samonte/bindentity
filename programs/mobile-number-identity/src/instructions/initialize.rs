@@ -4,9 +4,9 @@ use crate::{program::MobileNumberIdentity, state::Global};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct InitializeParams {
-    pub validator: Pubkey,
     pub treasury: Pubkey,
     pub service_fee: u64,
+    pub provider_fee: u64,
 }
 
 #[derive(Accounts)]
@@ -19,7 +19,7 @@ pub struct Initialize<'info> {
             "global".as_bytes(),
         ],
         bump,
-        space = 8 + 1 + 32 + 32 + 32 + 8,
+        space = Global::len(),
     )]
     pub global: Account<'info, Global>,
 
@@ -44,8 +44,8 @@ pub fn initialize_handler(ctx: Context<Initialize>, params: InitializeParams) ->
 
     global.bump = *ctx.bumps.get("global").unwrap();
     global.authority = ctx.accounts.authority.key();
-    global.validator = params.validator.key();
     global.treasury = params.treasury.key();
+    global.provider_fee = params.provider_fee;
     global.service_fee = params.service_fee;
 
     Ok(())
