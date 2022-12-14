@@ -35,9 +35,9 @@ pub struct VoidIdentity<'info> {
     )]
     pub validator: Box<Account<'info, Validator>>,
 
-    #[account(
-        constraint = provider.flags & 1 == 1, // @ CustomError::ProviderDisabled
-    )]
+    // #[account(
+    //     constraint = provider.flags & 1 == 1, // @ CustomError::ProviderDisabled
+    // )]
     pub provider: Box<Account<'info, Provider>>,
 
     #[account(
@@ -56,7 +56,7 @@ pub struct VoidIdentity<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// An identity can be voided in 2 ways:
+/// An identity can be void in 2 ways:
 /// 1. If the owner of the identity is also the signer
 /// 2. If the validator checked that indeed the user is the owner of the ID
 pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {

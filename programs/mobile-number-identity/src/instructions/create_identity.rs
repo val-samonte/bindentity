@@ -5,7 +5,7 @@ use crate::state::{Global, Identity, Link, Provider, Validator};
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateIdentityParams {
     id: String,
-    timestamp: u32,
+    timestamp: u64,
     registration_fee: Option<u64>,
 }
 
@@ -61,7 +61,7 @@ pub struct CreateIdentity<'info> {
     pub provider_treasury: UncheckedAccount<'info>,
 
     #[account(
-        constraint = provider.flags & 1 == 1, // @ CustomError::ProviderDisabled
+        // constraint = provider.flags & 1 == 1, // @ CustomError::ProviderDisabled
         constraint = provider.flags & 2 == 2, // @ CustomError::ProviderUnpublished
     )]
     pub provider: Box<Account<'info, Provider>>,
@@ -128,10 +128,14 @@ pub fn create_identity_handler(
     identity.owner = owner.key();
     identity.provider = ctx.accounts.provider.key();
     identity.timestamp = params.timestamp;
-    identity.id = hashv(&[params.id.as_bytes().as_ref()])
-        .to_bytes()
-        .try_into()
-        .unwrap();
+    identity.id = hashv(&[
+        provider.name.as_bytes(),
+        ":".as_bytes(),
+        params.id.as_bytes(),
+    ])
+    .to_bytes()
+    .try_into()
+    .unwrap();
 
     Ok(())
 }

@@ -10,7 +10,7 @@ pub struct Provider {
     /// Binary flags which describes the status of the provider. (1)
     ///
     /// * 1 - Enabled: System level control flag which tells if this Provider is enabled or not.
-    /// * 2 - Published: Control flag which is being set by the Provider's Owner which tells whether if it is usable or not.
+    /// * 2 - Published: Control flag set by the Provider's Owner which tells whether if it is usable or not.
     /// * 4 - Verified: Owner of this Provider account is verified through mythrilsoft `provider` provider ID.
     pub flags: u8,
 
@@ -27,7 +27,14 @@ pub struct Provider {
     /// The unique name of the provider (eg. email, phone, metamask, ph_national_id). (Varies)
     pub name: String,
 
-    /// URI which stores off chain details such as name, description, image, tags, etc. (Varies)
+    /// URI which stores off chain details in JSON: (Varies)
+    ///
+    /// * `name: string` (the user friendly name of the id)
+    /// * `description: string`
+    /// * `image: string`
+    /// * `tags: string[]` (for filter purposes, common tags are: country code, utility, type of ID)
+    /// * `website: string` (url of the marketing website)
+    /// * `registration_url: string` (important! url to redirect the user when availing the provider's service)
     pub uri: String,
 
     /// Unused reserved byte space for future additive changes. (32)

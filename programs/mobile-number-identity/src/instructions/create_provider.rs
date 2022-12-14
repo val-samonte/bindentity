@@ -2,11 +2,6 @@ use anchor_lang::{prelude::*, system_program};
 
 use crate::state::{Global, Provider};
 
-// TODO:
-// check optional accounts (v26):
-// needed to see if the provider is verified
-// https://github.com/coral-xyz/anchor/pull/2101
-
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateProviderParams {
     name: String,
@@ -66,7 +61,7 @@ pub fn create_provider_handler(
         },
     );
 
-    system_program::transfer(cpi_ctx, ctx.accounts.global.provider_fee)?;
+    system_program::transfer(cpi_ctx, ctx.accounts.global.provider_creation_fee)?;
 
     provider.bump = *ctx.bumps.get("provider").unwrap();
     provider.authority = owner.key();

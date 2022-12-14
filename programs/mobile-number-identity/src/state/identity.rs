@@ -17,11 +17,11 @@ pub struct Identity {
     pub provider: Pubkey,
 
     /// Unix timestamp. Besides from acting as a seed, useful to get the identities' creation order. (4)
-    pub timestamp: u32,
+    pub timestamp: u64,
 }
 
 impl Identity {
     pub fn len() -> usize {
-        8 + 1 + 32 + 32 + 32 + 4
+        8 + 1 + 32 + 32 + 32 + 8
     }
 }

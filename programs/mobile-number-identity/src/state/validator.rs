@@ -10,7 +10,7 @@ pub struct Validator {
 
     /// Binary flags which describes the status of the validator. (1)
     ///
-    /// * 1 - Enabled: Control flag which is being set by the parent Provider on whether this Validator is allowed to operate or not.
+    /// * 1 - Enabled: Control flag set by the parent Provider on whether this Validator is allowed to operate or not.
     /// * 2 - Permitted to customize `registration_fee`.
     pub flags: u8,
 

@@ -6,7 +6,7 @@ use crate::{program::MobileNumberIdentity, state::Global};
 pub struct InitializeParams {
     pub treasury: Pubkey,
     pub service_fee: u64,
-    pub provider_fee: u64,
+    pub provider_creation_fee: u64,
 }
 
 #[derive(Accounts)]
@@ -45,7 +45,7 @@ pub fn initialize_handler(ctx: Context<Initialize>, params: InitializeParams) ->
     global.bump = *ctx.bumps.get("global").unwrap();
     global.authority = ctx.accounts.authority.key();
     global.treasury = params.treasury.key();
-    global.provider_fee = params.provider_fee;
+    global.provider_creation_fee = params.provider_creation_fee;
     global.service_fee = params.service_fee;
 
     Ok(())

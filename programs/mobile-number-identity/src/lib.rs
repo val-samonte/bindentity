@@ -36,6 +36,20 @@ pub mod mobile_number_identity {
         create_identity_handler(ctx, params)
     }
 
+    pub fn update_provider(
+        ctx: Context<UpdateProvider>,
+        params: UpdateProviderParams,
+    ) -> Result<()> {
+        update_provider_handler(ctx, params)
+    }
+
+    pub fn update_validator(
+        ctx: Context<UpdateValidator>,
+        params: UpdateValidatorParams,
+    ) -> Result<()> {
+        update_validator_handler(ctx, params)
+    }
+
     pub fn void_identity(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
         void_identity_handler(ctx, params)
     }

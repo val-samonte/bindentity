@@ -15,7 +15,7 @@ pub struct Global {
     pub service_fee: u64,
 
     /// Fee for registering an identity provider account. (8)
-    pub provider_fee: u64,
+    pub provider_creation_fee: u64,
 
     /// Unused reserved byte space for future additive changes. (128)
     pub _reserved: [u8; 128],
