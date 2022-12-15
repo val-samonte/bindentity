@@ -16,7 +16,6 @@ import authorityKp from '../keys/authority.json';
 import validatorKp from '../keys/validator.json';
 import treasuryKp from '../keys/treasury.json';
 import { KeypairWallet } from './utils';
-import crypto from 'crypto';
 
 const { publicKey: programId } = Keypair.fromSecretKey(
 	new Uint8Array(programKp)
