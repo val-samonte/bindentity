@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, solana_program::hash::hashv, system_program};
+use anchor_lang::{prelude::*, system_program};
 
 use crate::state::{Global, Identity, Link, Provider, Validator};
 
@@ -128,10 +128,7 @@ pub fn create_identity_handler(
     identity.owner = owner.key();
     identity.provider = ctx.accounts.provider.key();
     identity.timestamp = params.timestamp;
-    identity.id = hashv(&[provider.name.as_bytes(), ":".as_bytes(), params.id.as_ref()])
-        .to_bytes()
-        .try_into()
-        .unwrap();
+    identity.id = Identity::id_hash(&provider.name, &params.id);
 
     Ok(())
 }

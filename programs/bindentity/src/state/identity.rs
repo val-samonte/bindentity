@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::hash::hashv};
 
 /// An Identity is an account that proves the association of the given ID to its owner's wallet account.
 /// An Identity is considered void if the corresponding Link account is closed.
@@ -23,5 +23,12 @@ pub struct Identity {
 impl Identity {
     pub fn len() -> usize {
         8 + 1 + 32 + 32 + 32 + 8
+    }
+
+    pub fn id_hash(provider_name: &String, id: &Vec<u8>) -> [u8; 32] {
+        hashv(&[provider_name.as_bytes(), ":".as_bytes(), id.as_ref()])
+            .to_bytes()
+            .try_into()
+            .unwrap()
     }
 }

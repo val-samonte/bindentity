@@ -71,6 +71,6 @@ pub enum CustomError {
     #[msg("Hash of the ID does not match")]
     InvalidIdHash,
 
-    #[msg("Signer is not authorized to void")]
+    #[msg("Signers are not authorized to void")]
     VoidUnauthorized,
 }

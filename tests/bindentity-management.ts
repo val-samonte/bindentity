@@ -3,12 +3,10 @@ import { Program } from '@project-serum/anchor';
 import { findProgramAddressSync } from '@project-serum/anchor/dist/cjs/utils/pubkey';
 import { Keypair, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js';
 import { Bindentity } from '../target/types/bindentity';
-
 import { assert } from 'chai';
-
 import validatorJSON from '../keys/validator.json';
 
-describe('bindentity', async () => {
+describe('Bindentity Management', async () => {
 	anchor.setProvider(anchor.AnchorProvider.env());
 
 	const program = anchor.workspace.Bindentity as Program<Bindentity>;
@@ -136,9 +134,6 @@ describe('bindentity', async () => {
 			systemProgram: SystemProgram.programId,
 		};
 
-		console.log('Params:', JSON.stringify(params, null, 2));
-		console.log('Accounts:', JSON.stringify(accounts, null, 2));
-
 		try {
 			await program.methods
 				.createIdentity(params)
@@ -147,7 +142,6 @@ describe('bindentity', async () => {
 				.rpc();
 
 			const result = await program.account.identity.fetch(identityPda);
-			console.log(JSON.stringify(result, null, 2));
 			assert.ok(owner.publicKey.equals(result.owner));
 		} catch (e) {
 			console.log(e);
@@ -156,6 +150,22 @@ describe('bindentity', async () => {
 	});
 
 	it('id owner should be able to void an identity', async () => {
+		try {
+			await program.methods
+				.updateValidator({
+					// allow validator to void
+					flags: validator.flags | 4,
+				})
+				.accounts({
+					authority: phoneProvider.authority,
+					provider: phoneProviderPda,
+					validator: validatorPda,
+				})
+				.rpc();
+		} catch (e) {
+			console.log(e);
+		}
+
 		const [linkPda] = findProgramAddressSync(
 			[Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
 			program.programId
@@ -231,7 +241,6 @@ describe('bindentity', async () => {
 				.rpc();
 
 			const result = await program.account.identity.fetch(identityPda);
-			console.log(JSON.stringify(result, null, 2));
 			assert.ok(owner.publicKey.equals(result.owner));
 		} catch (e) {
 			console.log(e);
@@ -239,7 +248,7 @@ describe('bindentity', async () => {
 		}
 	});
 
-	it('identity owner should be able to void an identity', async () => {
+	it('owner should be able to void an identity using wallet', async () => {
 		const [linkPda] = findProgramAddressSync(
 			[Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
 			program.programId

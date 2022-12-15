@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, solana_program::hash::hashv, system_program};
+use anchor_lang::{prelude::*, system_program};
 
 use crate::{
     state::{Global, Identity, Link, Provider, Validator},
@@ -58,8 +58,7 @@ pub struct VoidIdentity<'info> {
 
 /// An identity can be void in 3 ways:
 /// 1. If the owner of the identity is also the signer
-/// 2. If the validator checked that indeed the user is the owner of the ID
-/// 3. Or simply the validator is permitted to void an identity
+/// 2. If the permitted validator checked that indeed the user is the owner of the ID
 pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
     let identity = &ctx.accounts.identity;
     let provider = &ctx.accounts.provider;
@@ -67,23 +66,21 @@ pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityPar
     let link = &mut ctx.accounts.link;
     let signer = &mut ctx.accounts.signer;
 
-    if validator.flags & 4 != 4 {
-        match params.id {
-            Some(id) => {
-                let hash: [u8; 32] =
-                    hashv(&[provider.name.as_bytes(), ":".as_bytes(), id.as_ref()])
-                        .to_bytes()
-                        .try_into()
-                        .unwrap();
-
-                if hash != identity.id {
-                    return Err(error!(CustomError::InvalidIdHash));
-                }
+    match params.id {
+        Some(id) => {
+            if validator.flags & 4 != 4 {
+                return Err(error!(CustomError::VoidUnauthorized));
             }
-            None => {
-                if identity.key() != signer.key() {
-                    return Err(error!(CustomError::VoidUnauthorized));
-                }
+
+            let hash: [u8; 32] = Identity::id_hash(&provider.name, &id);
+
+            if hash != identity.id {
+                return Err(error!(CustomError::InvalidIdHash));
+            }
+        }
+        None => {
+            if identity.owner.key() != signer.key() {
+                return Err(error!(CustomError::VoidUnauthorized));
             }
         }
     }
