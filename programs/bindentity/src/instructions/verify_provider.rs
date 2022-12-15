@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::{Identity, Provider};
+use crate::state::{Identity, Link, Provider, Validator};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct VerifyProviderParams {
@@ -15,21 +15,42 @@ pub struct VerifyProvider<'info> {
             "provider".as_bytes(),
             "provider".as_bytes(),
         ],
-        bump = provider_provider.bump
+        bump = verifier_provider.bump
     )]
-    pub provider_provider: Account<'info, Provider>,
+    pub verifier_provider: Account<'info, Provider>,
+
+    #[account(
+        constraint = validator.provider.key() == verifier_provider.key(),
+    )]
+    pub validator: Account<'info, Validator>,
+
+    #[account(
+        constraint = signer.key() == validator.signer.key(),
+    )]
+    pub signer: Signer<'info>,
 
     #[account(
         has_one = owner,
         seeds = [
             "identity".as_bytes(),
             owner_identity.timestamp.to_string().as_bytes(),
-            provider_provider.key().as_ref(),
+            verifier_provider.key().as_ref(),
             params.owner_id.as_bytes(),
         ],
         bump = owner_identity.bump
     )]
     pub owner_identity: Account<'info, Identity>,
+
+    #[account(
+        constraint = owner_link.identity.key() == owner_identity.key(),
+        seeds = [
+            "link".as_bytes(),
+            verifier_provider.key().as_ref(),
+            params.owner_id.as_bytes(),
+        ],
+        bump = owner_identity.bump,
+    )]
+    pub owner_link: Account<'info, Link>,
 
     #[account(
         mut,

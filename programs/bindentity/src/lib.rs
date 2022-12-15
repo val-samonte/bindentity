@@ -15,6 +15,10 @@ pub mod bindentity {
         initialize_handler(ctx, params)
     }
 
+    pub fn update_config(ctx: Context<UpdateConfig>, params: UpdateConfigParams) -> Result<()> {
+        update_config_handler(ctx, params)
+    }
+
     pub fn create_provider(
         ctx: Context<CreateProvider>,
         params: CreateProviderParams,
@@ -36,6 +40,13 @@ pub mod bindentity {
         create_identity_handler(ctx, params)
     }
 
+    pub fn verify_provider(
+        ctx: Context<VerifyProvider>,
+        params: VerifyProviderParams,
+    ) -> Result<()> {
+        verify_provider_handler(ctx, params)
+    }
+
     pub fn update_provider(
         ctx: Context<UpdateProvider>,
         params: UpdateProviderParams,
@@ -52,10 +63,6 @@ pub mod bindentity {
 
     pub fn void_identity(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
         void_identity_handler(ctx, params)
-    }
-
-    pub fn update_config(ctx: Context<UpdateConfig>, params: UpdateConfigParams) -> Result<()> {
-        update_config_handler(ctx, params)
     }
 }
 
