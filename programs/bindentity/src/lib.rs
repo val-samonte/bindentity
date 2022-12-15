@@ -5,10 +5,10 @@ pub mod state;
 
 pub use instructions::*;
 
-declare_id!("8sEsVs5bwJj6S4cWibMJ9nouTMwzhAyoXruNXbykameX");
+declare_id!("Ed83sBUkVjtNEbcSnrqtodpVpDwnazHqiqAqncXjWNLZ");
 
 #[program]
-pub mod mobile_number_identity {
+pub mod bindentity {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>, params: InitializeParams) -> Result<()> {
@@ -64,6 +64,6 @@ pub enum CustomError {
     #[msg("Hash of the ID does not match")]
     InvalidIdHash,
 
-    #[msg("Signer has no void authority")]
+    #[msg("Signer is not authorized to void")]
     VoidUnauthorized,
 }

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{program::MobileNumberIdentity, state::Global};
+use crate::{program::Bindentity, state::Global};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct InitializeParams {
@@ -29,7 +29,7 @@ pub struct Initialize<'info> {
     #[account(
       constraint = program.programdata_address()? == Some(program_data.key())
     )]
-    pub program: Program<'info, MobileNumberIdentity>,
+    pub program: Program<'info, Bindentity>,
 
     #[account(
       constraint = program_data.upgrade_authority_address == Some(authority.key())
