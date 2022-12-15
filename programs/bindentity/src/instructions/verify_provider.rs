@@ -4,7 +4,7 @@ use crate::state::{Identity, Link, Provider, Validator};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct VerifyProviderParams {
-    pub owner_id: String,
+    pub owner_id: Vec<u8>,
 }
 
 #[derive(Accounts)]
@@ -35,7 +35,7 @@ pub struct VerifyProvider<'info> {
             "identity".as_bytes(),
             owner_identity.timestamp.to_string().as_bytes(),
             verifier_provider.key().as_ref(),
-            params.owner_id.as_bytes(),
+            params.owner_id.as_ref(),
         ],
         bump = owner_identity.bump
     )]
@@ -43,12 +43,6 @@ pub struct VerifyProvider<'info> {
 
     #[account(
         constraint = owner_link.identity.key() == owner_identity.key(),
-        seeds = [
-            "link".as_bytes(),
-            verifier_provider.key().as_ref(),
-            params.owner_id.as_bytes(),
-        ],
-        bump = owner_identity.bump,
     )]
     pub owner_link: Account<'info, Link>,
 

@@ -16,6 +16,7 @@ import authorityKp from '../keys/authority.json';
 import validatorKp from '../keys/validator.json';
 import treasuryKp from '../keys/treasury.json';
 import { KeypairWallet } from './utils';
+import crypto from 'crypto';
 
 const { publicKey: programId } = Keypair.fromSecretKey(
 	new Uint8Array(programKp)
@@ -56,30 +57,30 @@ const officialProviders = [
 
 const init = async () => {
 	// initialize global config, set provider_creation_fee to 0
-	try {
-		await program.methods
-			.initialize({
-				treasury: treasury.publicKey,
-				providerCreationFee: new BN(0),
-				serviceFee: new BN(0),
-			})
-			.accounts({
+	const existingConfig = await program.account.global.fetchNullable(globalPda);
+
+	if (!existingConfig) {
+		try {
+			const accounts = {
 				global: globalPda,
 				authority: authority.publicKey,
 				program: programId,
 				programData: programDataPda,
 				systemProgram: SystemProgram.programId,
-			})
-			.rpc();
-		const global = await program.account.global.fetch(globalPda);
-		console.log('Global config initialized:', JSON.stringify(global, null, 2));
-	} catch (e) {
-		try {
-			const global = await program.account.global.fetch(globalPda);
-			console.log(
-				'Global config already exist:',
-				JSON.stringify(global, null, 2)
-			);
+			};
+
+			console.log(JSON.stringify(accounts, null, 2));
+
+			await program.methods
+				.initialize({
+					treasury: treasury.publicKey,
+					providerCreationFee: new BN(0),
+					serviceFee: new BN(0),
+				})
+				.accounts(accounts)
+				.rpc();
+
+			console.log('Global config initialized');
 		} catch (e) {
 			console.log(e);
 			throw new Error(e);
@@ -151,7 +152,7 @@ const init = async () => {
 			}
 
 			if (program.provider.sendAndConfirm) {
-				return program.provider.sendAndConfirm(tx, [validator]);
+				return program.provider.sendAndConfirm(tx, []);
 			}
 
 			return null;
@@ -160,7 +161,6 @@ const init = async () => {
 
 	// make authority a verified provider
 	const timestamp = new BN(Math.floor(new Date().getTime() / 1000));
-	const authorityId = authority.publicKey.toBase58();
 
 	const [verifierPda] = findProgramAddressSync(
 		[Buffer.from('provider', 'utf-8'), Buffer.from('provider', 'utf-8')],
@@ -181,7 +181,7 @@ const init = async () => {
 			Buffer.from('identity', 'utf-8'),
 			Buffer.from(timestamp + '', 'utf-8'),
 			verifierPda.toBytes(),
-			Buffer.from(authorityId, 'utf-8'),
+			authority.publicKey.toBytes(),
 		],
 		program.programId
 	);
@@ -190,34 +190,39 @@ const init = async () => {
 		[
 			Buffer.from('link', 'utf-8'),
 			verifierPda.toBytes(),
-			Buffer.from(authorityId, 'utf-8'),
+			authority.publicKey.toBytes(),
 		],
 		program.programId
 	);
 
-	try {
-		await program.methods
-			.createIdentity({
-				id: authorityId,
-				registrationFee: new BN(0),
-				timestamp,
-			})
-			.accounts({
-				identity: identityPda,
-				link: linkPda,
-				provider: verifierPda,
-				providerTreasury: treasury.publicKey,
-				validator: validatorPda,
-				signer: validator.publicKey,
-				owner: authority.publicKey,
-				global: globalPda,
-				treasury: treasury.publicKey,
-				systemProgram: SystemProgram.programId,
-			})
-			.rpc();
-	} catch (e) {
-		console.log(e);
-		throw new Error(e);
+	const existingLink = await program.account.link.fetchNullable(linkPda);
+
+	if (!existingLink) {
+		try {
+			await program.methods
+				.createIdentity({
+					id: authority.publicKey.toBytes(),
+					registrationFee: new BN(0),
+					timestamp,
+				})
+				.accounts({
+					identity: identityPda,
+					link: linkPda,
+					provider: verifierPda,
+					providerTreasury: treasury.publicKey,
+					validator: validatorPda,
+					signer: validator.publicKey,
+					owner: authority.publicKey,
+					global: globalPda,
+					treasury: treasury.publicKey,
+					systemProgram: SystemProgram.programId,
+				})
+				.signers([validator])
+				.rpc();
+		} catch (e) {
+			console.log(e);
+			throw new Error(e);
+		}
 	}
 
 	// verify each initial providers (including the verifier itself)
@@ -234,23 +239,41 @@ const init = async () => {
 
 				return program.methods
 					.verifyProvider({
-						ownerId: authorityId,
+						ownerId: authority.publicKey.toBytes(),
 					})
 					.accounts({
 						targetProvider: providerPda,
 						owner: authority.publicKey,
-						ownerIdentity: identityPda,
+						ownerIdentity: existingLink ? existingLink.identity : identityPda,
 						ownerLink: linkPda,
 						verifierProvider: verifierPda,
 						validator: validatorPda,
 						signer: validator.publicKey,
 					})
+					.signers([validator])
 					.rpc();
 			})
 		);
 	} catch (e) {
 		console.log(e);
 	}
+
+	// update fees
+	await program.methods
+		.updateConfig({
+			providerCreationFee: new BN(LAMPORTS_PER_SOL),
+			serviceFee: new BN(LAMPORTS_PER_SOL / 100),
+			authority: null,
+			treasury: null,
+		})
+		.accounts({
+			authority: authority.publicKey,
+			global: globalPda,
+		})
+		.rpc();
+
+	const providers = await program.account.provider.all();
+	console.log('Registered providers:', JSON.stringify(providers, null, 2));
 };
 
 init();
