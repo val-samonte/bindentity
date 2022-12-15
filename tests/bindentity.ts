@@ -9,7 +9,6 @@ import { assert } from 'chai';
 import validatorJSON from '../keys/validator.json';
 
 describe('bindentity', async () => {
-	// Configure the client to use the local cluster.
 	anchor.setProvider(anchor.AnchorProvider.env());
 
 	const program = anchor.workspace.Bindentity as Program<Bindentity>;
@@ -25,6 +24,8 @@ describe('bindentity', async () => {
 	let phoneProvider;
 	let validatorPda;
 	let validator;
+	let owner: Keypair;
+	let randomPhoneNumber;
 
 	before(async () => {
 		const _global = await program.account.global.fetchNullable(globalPda);
@@ -75,19 +76,37 @@ describe('bindentity', async () => {
 		phoneProvider = _phoneProvider;
 		validatorPda = _validatorPda;
 		validator = _validator;
+		owner = Keypair.generate();
+		randomPhoneNumber = Buffer.from(
+			Math.floor(Math.random() * 100_000_000_000) + ''
+		);
+
+		try {
+			const connection = program.provider.connection;
+			const latestBlockHash = await connection.getLatestBlockhash();
+			const signature = await connection.requestAirdrop(
+				owner.publicKey,
+				LAMPORTS_PER_SOL
+			);
+
+			await connection.confirmTransaction({
+				blockhash: latestBlockHash.blockhash,
+				lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+				signature,
+			});
+		} catch (e) {
+			console.log(e);
+			throw new Error(e);
+		}
 	});
 
 	it('should register an identity', async () => {
-		const randomPhoneNumber = Buffer.from(
-			Math.floor(Math.random() * 100_000_000_000) + ''
-		);
 		const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000));
 		const params = {
 			id: randomPhoneNumber,
 			timestamp,
 			registrationFee: null,
 		};
-		const owner = Keypair.generate();
 
 		const [identityPda] = findProgramAddressSync(
 			[
@@ -100,7 +119,7 @@ describe('bindentity', async () => {
 		);
 
 		const [linkPda] = findProgramAddressSync(
-			[Buffer.from('identity'), phoneProviderPda.toBytes(), randomPhoneNumber],
+			[Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
 			program.programId
 		);
 
@@ -121,22 +140,88 @@ describe('bindentity', async () => {
 		console.log('Accounts:', JSON.stringify(accounts, null, 2));
 
 		try {
-			const connection = program.provider.connection;
-			const latestBlockHash = await connection.getLatestBlockhash();
-			const signature = await connection.requestAirdrop(
-				owner.publicKey,
-				LAMPORTS_PER_SOL
-			);
+			await program.methods
+				.createIdentity(params)
+				.accounts(accounts)
+				.signers([owner, validatorKp])
+				.rpc();
 
-			await connection.confirmTransaction({
-				blockhash: latestBlockHash.blockhash,
-				lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-				signature,
-			});
+			const result = await program.account.identity.fetch(identityPda);
+			console.log(JSON.stringify(result, null, 2));
+			assert.ok(owner.publicKey.equals(result.owner));
 		} catch (e) {
 			console.log(e);
 			throw new Error(e);
 		}
+	});
+
+	it('id owner should be able to void an identity', async () => {
+		const [linkPda] = findProgramAddressSync(
+			[Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
+			program.programId
+		);
+
+		const link = await program.account.link.fetch(linkPda);
+
+		try {
+			await program.methods
+				.voidIdentity({
+					id: randomPhoneNumber,
+				})
+				.accounts({
+					global: globalPda,
+					identity: link.identity,
+					link: linkPda,
+					provider: phoneProviderPda,
+					signer: program.provider.publicKey,
+					treasury: phoneProvider.treasury,
+					validator: validatorPda,
+					validatorSigner: validator.signer,
+					systemProgram: SystemProgram.programId,
+				})
+				.signers([validatorKp])
+				.rpc();
+		} catch (e) {
+			console.log(e);
+			throw new Error(e);
+		}
+	});
+
+	it('should renew the same identity after getting void', async () => {
+		const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000));
+		const params = {
+			id: randomPhoneNumber,
+			timestamp,
+			registrationFee: null,
+		};
+
+		const [identityPda] = findProgramAddressSync(
+			[
+				Buffer.from('identity'),
+				Buffer.from(timestamp + ''),
+				phoneProviderPda.toBytes(),
+				randomPhoneNumber,
+			],
+			program.programId
+		);
+
+		const [linkPda] = findProgramAddressSync(
+			[Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
+			program.programId
+		);
+
+		const accounts = {
+			global: globalPda,
+			identity: identityPda,
+			link: linkPda,
+			owner: owner.publicKey,
+			provider: phoneProviderPda,
+			providerTreasury: phoneProvider.treasury,
+			signer: validator.signer,
+			treasury: global.treasury,
+			validator: validatorPda,
+			systemProgram: SystemProgram.programId,
+		};
 
 		try {
 			await program.methods
@@ -154,5 +239,35 @@ describe('bindentity', async () => {
 		}
 	});
 
-	// todo: void via id, void via account ownership
+	it('identity owner should be able to void an identity', async () => {
+		const [linkPda] = findProgramAddressSync(
+			[Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
+			program.programId
+		);
+
+		const link = await program.account.link.fetch(linkPda);
+
+		try {
+			await program.methods
+				.voidIdentity({
+					id: null,
+				})
+				.accounts({
+					global: globalPda,
+					identity: link.identity,
+					link: linkPda,
+					provider: phoneProviderPda,
+					signer: owner.publicKey,
+					treasury: phoneProvider.treasury,
+					validator: validatorPda,
+					validatorSigner: validator.signer,
+					systemProgram: SystemProgram.programId,
+				})
+				.signers([owner, validatorKp])
+				.rpc();
+		} catch (e) {
+			console.log(e);
+			throw new Error(e);
+		}
+	});
 });

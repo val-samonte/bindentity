@@ -56,29 +56,34 @@ pub struct VoidIdentity<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// An identity can be void in 2 ways:
+/// An identity can be void in 3 ways:
 /// 1. If the owner of the identity is also the signer
 /// 2. If the validator checked that indeed the user is the owner of the ID
+/// 3. Or simply the validator is permitted to void an identity
 pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
     let identity = &ctx.accounts.identity;
     let provider = &ctx.accounts.provider;
+    let validator = &ctx.accounts.validator;
     let link = &mut ctx.accounts.link;
     let signer = &mut ctx.accounts.signer;
 
-    match params.id {
-        Some(id) => {
-            let hash: [u8; 32] = hashv(&[provider.name.as_bytes(), ":".as_bytes(), id.as_ref()])
-                .to_bytes()
-                .try_into()
-                .unwrap();
+    if validator.flags & 4 != 4 {
+        match params.id {
+            Some(id) => {
+                let hash: [u8; 32] =
+                    hashv(&[provider.name.as_bytes(), ":".as_bytes(), id.as_ref()])
+                        .to_bytes()
+                        .try_into()
+                        .unwrap();
 
-            if hash != identity.id {
-                return Err(error!(CustomError::InvalidIdHash));
+                if hash != identity.id {
+                    return Err(error!(CustomError::InvalidIdHash));
+                }
             }
-        }
-        None => {
-            if identity.key() != signer.key() {
-                return Err(error!(CustomError::VoidUnauthorized));
+            None => {
+                if identity.key() != signer.key() {
+                    return Err(error!(CustomError::VoidUnauthorized));
+                }
             }
         }
     }

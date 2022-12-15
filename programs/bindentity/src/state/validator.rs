@@ -12,6 +12,7 @@ pub struct Validator {
     ///
     /// * 1 - Enabled: Control flag set by the parent Provider on whether this Validator is allowed to operate or not.
     /// * 2 - Permitted to customize `registration_fee`.
+    /// * 4 - Permitted to void identities.
     pub flags: u8,
 
     /// Authority who owns this validator. (32)
