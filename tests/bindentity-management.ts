@@ -98,7 +98,7 @@ describe('Bindentity Management', () => {
     }
   })
 
-  it('should register an identity', async () => {
+  it('should register an bindentity', async () => {
     const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000))
     const params = {
       data: randomPhoneNumber,
@@ -149,7 +149,7 @@ describe('Bindentity Management', () => {
     }
   })
 
-  it('data owner should be able to void an identity', async () => {
+  it('data owner should be able to void an bindentity', async () => {
     try {
       await program.methods
         .updateValidator({
