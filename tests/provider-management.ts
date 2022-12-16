@@ -202,14 +202,14 @@ describe('Provider Management', () => {
   })
 
   it('should allow user to register to the new bindentity', async () => {
-    const id = 'sample_user_id'
+    const data = 'sample_user_id'
     const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
     const [identityPda] = findProgramAddressSync(
       [
         Buffer.from('identity', 'utf-8'),
         Buffer.from(timestamp + '', 'utf-8'),
         providerPda.toBytes(),
-        Buffer.from(id, 'utf-8'),
+        Buffer.from(data, 'utf-8'),
       ],
       program.programId,
     )
@@ -218,7 +218,7 @@ describe('Provider Management', () => {
       [
         Buffer.from('link', 'utf-8'),
         providerPda.toBytes(),
-        Buffer.from(id, 'utf-8'),
+        Buffer.from(data, 'utf-8'),
       ],
       program.programId,
     )
@@ -229,7 +229,7 @@ describe('Provider Management', () => {
     try {
       await program.methods
         .createIdentity({
-          id,
+          data,
           registrationFee: new BN(0),
           timestamp,
         })

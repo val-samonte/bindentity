@@ -1,14 +1,14 @@
 use anchor_lang::{prelude::*, solana_program::hash::hashv};
 
-/// An Identity is an account that proves the association of the given ID to its owner's wallet account.
+/// An Identity is an account that proves the association of the given data to its owner's wallet account.
 /// An Identity is considered void if the corresponding Link account is closed.
 #[account]
 pub struct Identity {
     /// Bump nonce of the PDA. (1)
     pub bump: u8,
 
-    /// The hash of the id, phone number or email. (32)
-    pub id: [u8; 32],
+    /// The hash of any data, such as phone number or email. (32)
+    pub data: [u8; 32],
 
     /// Owner of this identity. (32)
     pub owner: Pubkey,
@@ -25,7 +25,7 @@ impl Identity {
         8 + 1 + 32 + 32 + 32 + 8
     }
 
-    pub fn id_hash(provider_name: &String, id: &Vec<u8>) -> [u8; 32] {
+    pub fn data_hash(provider_name: &String, id: &Vec<u8>) -> [u8; 32] {
         hashv(&[provider_name.as_bytes(), ":".as_bytes(), id.as_ref()])
             .to_bytes()
             .try_into()

@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 /// Link account serves as protection against duplicate identities.
-/// If a link between the provider and the owner's ID is missing, the identity is considered void.
+/// If a link between the provider and the owner's data is missing, the identity is considered void.
 #[account]
 pub struct Link {
     /// Bump nonce of the PDA. (1)

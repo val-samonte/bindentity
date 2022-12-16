@@ -5,7 +5,7 @@ pub mod state;
 
 pub use instructions::*;
 
-declare_id!("Ed83sBUkVjtNEbcSnrqtodpVpDwnazHqiqAqncXjWNLZ");
+declare_id!("HxtjikNnqQszksmGnwcMsC2pTEpU1CoGc6DFp9ZwFRL3");
 
 #[program]
 pub mod bindentity {
@@ -68,6 +68,12 @@ pub mod bindentity {
 
 #[error_code]
 pub enum CustomError {
+    #[msg("Provider is unpublished")]
+    ProviderUnpublished,
+
+    #[msg("Validator is not allowed to create an identity")]
+    ValidatorDisabled,
+
     #[msg("Hash of the ID does not match")]
     InvalidIdHash,
 

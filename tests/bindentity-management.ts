@@ -101,7 +101,7 @@ describe('Bindentity Management', () => {
   it('should register an identity', async () => {
     const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000))
     const params = {
-      id: randomPhoneNumber,
+      data: randomPhoneNumber,
       timestamp,
       registrationFee: null,
     }
@@ -149,7 +149,7 @@ describe('Bindentity Management', () => {
     }
   })
 
-  it('id owner should be able to void an identity', async () => {
+  it('data owner should be able to void an identity', async () => {
     try {
       await program.methods
         .updateValidator({
@@ -176,7 +176,7 @@ describe('Bindentity Management', () => {
     try {
       await program.methods
         .voidIdentity({
-          id: randomPhoneNumber,
+          data: randomPhoneNumber,
         })
         .accounts({
           global: globalPda,
@@ -200,7 +200,7 @@ describe('Bindentity Management', () => {
   it('should renew the same identity after getting void', async () => {
     const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000))
     const params = {
-      id: randomPhoneNumber,
+      data: randomPhoneNumber,
       timestamp,
       registrationFee: null,
     }
@@ -259,7 +259,7 @@ describe('Bindentity Management', () => {
     try {
       await program.methods
         .voidIdentity({
-          id: null,
+          data: null,
         })
         .accounts({
           global: globalPda,

@@ -52,7 +52,7 @@ pub fn create_provider_handler(
     let owner = &mut ctx.accounts.owner;
     let provider = &mut ctx.accounts.provider;
 
-    // pay provider fee
+    // pay provider creation fee
     let cpi_ctx = CpiContext::new(
         ctx.accounts.system_program.to_account_info(),
         system_program::Transfer {

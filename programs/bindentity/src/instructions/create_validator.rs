@@ -29,7 +29,6 @@ pub struct CreateValidator<'info> {
 
     #[account(
         has_one = authority,
-        // constraint = provider.flags & 1 == 1, // @ CustomError::ProviderDisabled
     )]
     pub provider: Account<'info, Provider>,
 

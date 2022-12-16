@@ -7,7 +7,7 @@ use crate::{
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct VoidIdentityParams {
-    id: Option<Vec<u8>>,
+    data: Option<Vec<u8>>,
 }
 
 #[derive(Accounts)]
@@ -34,9 +34,6 @@ pub struct VoidIdentity<'info> {
     )]
     pub validator: Box<Account<'info, Validator>>,
 
-    // #[account(
-    //     constraint = provider.flags & 1 == 1, // @ CustomError::ProviderDisabled
-    // )]
     pub provider: Box<Account<'info, Provider>>,
 
     #[account(
@@ -55,7 +52,7 @@ pub struct VoidIdentity<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// An identity can be void in 3 ways:
+/// An identity can be void in 2 ways:
 /// 1. If the owner of the identity is also the signer
 /// 2. If the permitted validator checked that indeed the user is the owner of the ID
 pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
@@ -65,15 +62,15 @@ pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityPar
     let link = &mut ctx.accounts.link;
     let signer = &mut ctx.accounts.signer;
 
-    match params.id {
-        Some(id) => {
+    match params.data {
+        Some(data) => {
             if validator.flags & 4 != 4 {
                 return Err(error!(CustomError::VoidUnauthorized));
             }
 
-            let hash: [u8; 32] = Identity::id_hash(&provider.name, &id);
+            let hash: [u8; 32] = Identity::data_hash(&provider.name, &data);
 
-            if hash != identity.id {
+            if hash != identity.data {
                 return Err(error!(CustomError::InvalidIdHash));
             }
         }

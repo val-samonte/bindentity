@@ -200,7 +200,7 @@ const init = async () => {
     try {
       await program.methods
         .createIdentity({
-          id: authority.publicKey.toBytes(),
+          data: authority.publicKey.toBytes(),
           registrationFee: new BN(0),
           timestamp,
         })
@@ -238,7 +238,7 @@ const init = async () => {
 
         return program.methods
           .verifyProvider({
-            ownerId: authority.publicKey.toBytes(),
+            data: authority.publicKey.toBytes(),
           })
           .accounts({
             targetProvider: providerPda,

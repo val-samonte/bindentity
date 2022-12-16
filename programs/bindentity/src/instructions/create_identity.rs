@@ -1,10 +1,13 @@
 use anchor_lang::{prelude::*, system_program};
 
-use crate::state::{Global, Identity, Link, Provider, Validator};
+use crate::{
+    state::{Global, Identity, Link, Provider, Validator},
+    CustomError,
+};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateIdentityParams {
-    id: Vec<u8>,
+    data: Vec<u8>,
     timestamp: u64,
     registration_fee: Option<u64>,
 }
@@ -19,7 +22,7 @@ pub struct CreateIdentity<'info> {
             "identity".as_bytes(),
             params.timestamp.to_string().as_bytes(),
             provider.key().as_ref(),
-            params.id.as_ref(),
+            params.data.as_ref(),
         ],
         bump,
         space = Identity::len(),
@@ -32,7 +35,7 @@ pub struct CreateIdentity<'info> {
         seeds = [
             "link".as_bytes(),
             provider.key().as_ref(),
-            params.id.as_ref(),
+            params.data.as_ref(),
         ],
         bump,
         space = Link::len(),
@@ -49,7 +52,7 @@ pub struct CreateIdentity<'info> {
 
     #[account(
         constraint = validator.provider.key() == provider.key(),
-        constraint = validator.flags & 1 == 1, // @ CustomError::ValidatorDisabled
+        constraint = validator.flags & 1 == 1 @ CustomError::ValidatorDisabled,
     )]
     pub validator: Box<Account<'info, Validator>>,
 
@@ -61,8 +64,7 @@ pub struct CreateIdentity<'info> {
     pub provider_treasury: UncheckedAccount<'info>,
 
     #[account(
-        // constraint = provider.flags & 1 == 1, // @ CustomError::ProviderDisabled
-        constraint = provider.flags & 2 == 2, // @ CustomError::ProviderUnpublished
+        constraint = provider.flags & 2 == 2 @ CustomError::ProviderUnpublished,
     )]
     pub provider: Box<Account<'info, Provider>>,
 
@@ -128,7 +130,7 @@ pub fn create_identity_handler(
     identity.owner = owner.key();
     identity.provider = ctx.accounts.provider.key();
     identity.timestamp = params.timestamp;
-    identity.id = Identity::id_hash(&provider.name, &params.id);
+    identity.data = Identity::data_hash(&provider.name, &params.data);
 
     Ok(())
 }
