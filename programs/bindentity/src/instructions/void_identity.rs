@@ -31,7 +31,6 @@ pub struct VoidIdentity<'info> {
 
     #[account(
         constraint = validator.provider.key() == provider.key(),
-        constraint = validator.flags & 1 == 1, // @ CustomError::ValidatorDisabled
     )]
     pub validator: Box<Account<'info, Validator>>,
 

@@ -6,7 +6,7 @@ import { Bindentity } from '../target/types/bindentity';
 import { assert } from 'chai';
 import validatorJSON from '../keys/validator.json';
 
-describe('Bindentity Management', async () => {
+describe('Bindentity Management', () => {
 	anchor.setProvider(anchor.AnchorProvider.env());
 
 	const program = anchor.workspace.Bindentity as Program<Bindentity>;
