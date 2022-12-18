@@ -4,7 +4,7 @@ Bindie (short for Bindentity, phonetically similar to ID) allows users to link t
 
 ## How does it work?
 
-![Bindentity Accounts Overview](https://user-images.githubusercontent.com/85012991/208246913-cc87415a-5adf-4b04-bbbb-772f56cd5132.png)
+![Bindentity Overview](https://user-images.githubusercontent.com/767060/208278854-fc3f72a9-7202-47d7-9e2e-eacd61c4e36c.png)
 
 The protocol allows the providers to distribute their own bindie under their own namespace. A namespace is a unique identifier of the provider. Some of these namespaces are already reserved by the protocol, such as `email` and `phone`.
 
