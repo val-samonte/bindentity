@@ -1,7 +1,7 @@
 use anchor_lang::{prelude::*, system_program};
 
 use crate::{
-    state::{Global, Identity, Link, Provider, Validator},
+    state::{Bindie, Global, Link, Provider, Validator},
     CustomError,
 };
 
@@ -13,7 +13,7 @@ pub struct VoidIdentityParams {
 #[derive(Accounts)]
 #[instruction(params: VoidIdentityParams)]
 pub struct VoidIdentity<'info> {
-    pub identity: Account<'info, Identity>,
+    pub identity: Account<'info, Bindie>,
 
     #[account(
         mut,
@@ -68,7 +68,7 @@ pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityPar
                 return Err(error!(CustomError::VoidUnauthorized));
             }
 
-            let hash: [u8; 32] = Identity::data_hash(&provider.name, &data);
+            let hash: [u8; 32] = Bindie::data_hash(&provider.name, &data);
 
             if hash != identity.data {
                 return Err(error!(CustomError::InvalidIdHash));

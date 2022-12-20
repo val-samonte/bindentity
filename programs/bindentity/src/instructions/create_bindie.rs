@@ -1,33 +1,33 @@
 use anchor_lang::{prelude::*, system_program};
 
 use crate::{
-    state::{Global, Identity, Link, Provider, Validator},
+    state::{Bindie, Global, Link, Provider, Validator},
     CustomError,
 };
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct CreateIdentityParams {
+pub struct CreateBindieParams {
     data: Vec<u8>,
     timestamp: u64,
     registration_fee: Option<u64>,
 }
 
 #[derive(Accounts)]
-#[instruction(params: CreateIdentityParams)]
-pub struct CreateIdentity<'info> {
+#[instruction(params: CreateBindieParams)]
+pub struct CreateBindie<'info> {
     #[account(
         init,
         payer = owner,
         seeds = [
-            "identity".as_bytes(),
+            "bindie".as_bytes(),
             params.timestamp.to_string().as_bytes(),
             provider.key().as_ref(),
             params.data.as_ref(),
         ],
         bump,
-        space = Identity::len(),
+        space = Bindie::len(),
     )]
-    pub identity: Box<Account<'info, Identity>>,
+    pub bindie: Box<Account<'info, Bindie>>,
 
     #[account(
         init,
@@ -84,11 +84,8 @@ pub struct CreateIdentity<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn create_identity_handler(
-    ctx: Context<CreateIdentity>,
-    params: CreateIdentityParams,
-) -> Result<()> {
-    let identity = &mut ctx.accounts.identity;
+pub fn create_bindie_handler(ctx: Context<CreateBindie>, params: CreateBindieParams) -> Result<()> {
+    let bindie = &mut ctx.accounts.bindie;
     let link = &mut ctx.accounts.link;
     let owner = &mut ctx.accounts.owner;
     let provider = &ctx.accounts.provider;
@@ -124,13 +121,13 @@ pub fn create_identity_handler(
     )?;
 
     link.bump = *ctx.bumps.get("link").unwrap();
-    link.identity = identity.key();
+    link.identity = bindie.key();
 
-    identity.bump = *ctx.bumps.get("identity").unwrap();
-    identity.owner = owner.key();
-    identity.provider = ctx.accounts.provider.key();
-    identity.timestamp = params.timestamp;
-    identity.data = Identity::data_hash(&provider.name, &params.data);
+    bindie.bump = *ctx.bumps.get("identity").unwrap();
+    bindie.owner = owner.key();
+    bindie.provider = ctx.accounts.provider.key();
+    bindie.timestamp = params.timestamp;
+    bindie.data = Bindie::data_hash(&provider.name, &params.data);
 
     Ok(())
 }

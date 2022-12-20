@@ -28,7 +28,9 @@ pub struct CreateValidator<'info> {
     pub authority: Signer<'info>,
 
     #[account(
+        mut,
         has_one = authority,
+        constraint = provider.flags & 8 != 8,
     )]
     pub provider: Account<'info, Provider>,
 
@@ -39,12 +41,14 @@ pub fn create_validator_handler(
     ctx: Context<CreateValidator>,
     params: CreateValidatorParams,
 ) -> Result<()> {
+    let provider = &mut ctx.accounts.provider;
     let validator = &mut ctx.accounts.validator;
 
     validator.bump = *ctx.bumps.get("validator").unwrap();
     validator.flags = if params.enabled { 1 } else { 0 };
     validator.signer = params.signer.key();
-    validator.provider = ctx.accounts.provider.key();
+    validator.provider = provider.key();
+    provider.validator_count += 1;
 
     Ok(())
 }

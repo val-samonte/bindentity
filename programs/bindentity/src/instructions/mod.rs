@@ -1,4 +1,5 @@
-mod create_identity;
+mod buy_provider;
+mod create_bindie;
 mod create_provider;
 mod create_validator;
 mod initialize;
@@ -8,7 +9,8 @@ mod update_validator;
 mod verify_provider;
 mod void_identity;
 
-pub use create_identity::*;
+pub use buy_provider::*;
+pub use create_bindie::*;
 pub use create_provider::*;
 pub use create_validator::*;
 pub use initialize::*;

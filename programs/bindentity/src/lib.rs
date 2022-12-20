@@ -5,7 +5,7 @@ pub mod state;
 
 pub use instructions::*;
 
-declare_id!("HxtjikNnqQszksmGnwcMsC2pTEpU1CoGc6DFp9ZwFRL3");
+declare_id!("6KDKFy7WjBegkyEsiFWMmcGFTMhNE811NcfCLeveAJrC");
 
 #[program]
 pub mod bindentity {
@@ -33,11 +33,8 @@ pub mod bindentity {
         create_validator_handler(ctx, params)
     }
 
-    pub fn create_identity(
-        ctx: Context<CreateIdentity>,
-        params: CreateIdentityParams,
-    ) -> Result<()> {
-        create_identity_handler(ctx, params)
+    pub fn create_bindie(ctx: Context<CreateBindie>, params: CreateBindieParams) -> Result<()> {
+        create_bindie_handler(ctx, params)
     }
 
     pub fn verify_provider(
@@ -52,6 +49,10 @@ pub mod bindentity {
         params: UpdateProviderParams,
     ) -> Result<()> {
         update_provider_handler(ctx, params)
+    }
+
+    pub fn buy_provider(ctx: Context<BuyProvider>, params: BuyProviderParams) -> Result<()> {
+        buy_provider_handler(ctx, params)
     }
 
     pub fn update_validator(
@@ -79,4 +80,7 @@ pub enum CustomError {
 
     #[msg("Signers are not authorized to void")]
     VoidUnauthorized,
+
+    #[msg("Cannot sell a disabled / published / provider with validators")]
+    SellingNotAllowed,
 }

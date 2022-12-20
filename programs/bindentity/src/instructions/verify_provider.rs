@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::{Identity, Link, Provider, Validator};
+use crate::state::{Bindie, Link, Provider, Validator};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct VerifyProviderParams {
@@ -39,7 +39,7 @@ pub struct VerifyProvider<'info> {
         ],
         bump = owner_identity.bump
     )]
-    pub owner_identity: Account<'info, Identity>,
+    pub owner_identity: Account<'info, Bindie>,
 
     #[account(
         constraint = owner_link.identity.key() == owner_identity.key(),

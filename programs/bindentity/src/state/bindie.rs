@@ -1,9 +1,9 @@
 use anchor_lang::{prelude::*, solana_program::hash::hashv};
 
-/// An Identity is an account that proves the association of the given data to its owner's wallet account.
-/// An Identity is considered void if the corresponding Link account is closed.
+/// A Bindie is an account that proves the association of the given data to its owner's wallet account.
+/// A Bindie is considered void if the corresponding Link account is closed.
 #[account]
-pub struct Identity {
+pub struct Bindie {
     /// Bump nonce of the PDA. (1)
     pub bump: u8,
 
@@ -20,7 +20,7 @@ pub struct Identity {
     pub timestamp: u64,
 }
 
-impl Identity {
+impl Bindie {
     pub fn len() -> usize {
         8 + 1 + 32 + 32 + 32 + 8
     }

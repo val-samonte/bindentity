@@ -5,7 +5,6 @@ use crate::state::{Global, Provider};
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateProviderParams {
     name: String,
-    published: bool,
     registration_fee: u64,
     uri: String,
     provider_treasury: Pubkey,
@@ -65,9 +64,11 @@ pub fn create_provider_handler(
 
     provider.bump = *ctx.bumps.get("provider").unwrap();
     provider.authority = owner.key();
-    provider.flags = 1 | (if params.published { 2 } else { 0 });
+    provider.flags = 1;
     provider.treasury = params.provider_treasury.key();
     provider.registration_fee = params.registration_fee;
+    provider.validator_count = 0;
+    provider.selling_price = 0;
     provider.name = params.name;
     provider.uri = params.uri;
 

@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.devnet]
-bindentity = "HxtjikNnqQszksmGnwcMsC2pTEpU1CoGc6DFp9ZwFRL3"
+bindentity = "6KDKFy7WjBegkyEsiFWMmcGFTMhNE811NcfCLeveAJrC"
 
 [registry]
 url = "https://api.apr.dev"
