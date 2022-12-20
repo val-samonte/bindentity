@@ -121,7 +121,7 @@ pub fn create_bindie_handler(ctx: Context<CreateBindie>, params: CreateBindiePar
     )?;
 
     link.bump = *ctx.bumps.get("link").unwrap();
-    link.identity = bindie.key();
+    link.bindie = bindie.key();
 
     bindie.bump = *ctx.bumps.get("identity").unwrap();
     bindie.owner = owner.key();

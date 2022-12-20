@@ -32,17 +32,17 @@ pub struct VerifyProvider<'info> {
     #[account(
         has_one = owner,
         seeds = [
-            "identity".as_bytes(),
-            owner_identity.timestamp.to_string().as_bytes(),
+            "bindie".as_bytes(),
+            owner_bindie.timestamp.to_string().as_bytes(),
             verifier_provider.key().as_ref(),
             params.data.as_ref(),
         ],
-        bump = owner_identity.bump
+        bump = owner_bindie.bump
     )]
-    pub owner_identity: Account<'info, Bindie>,
+    pub owner_bindie: Account<'info, Bindie>,
 
     #[account(
-        constraint = owner_link.identity.key() == owner_identity.key(),
+        constraint = owner_link.bindie.key() == owner_bindie.key(),
     )]
     pub owner_link: Account<'info, Link>,
 

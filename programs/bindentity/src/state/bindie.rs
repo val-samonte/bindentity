@@ -25,8 +25,8 @@ impl Bindie {
         8 + 1 + 32 + 32 + 32 + 8
     }
 
-    pub fn data_hash(provider_name: &String, id: &Vec<u8>) -> [u8; 32] {
-        hashv(&[provider_name.as_bytes(), ":".as_bytes(), id.as_ref()])
+    pub fn data_hash(provider_name: &String, data: &Vec<u8>) -> [u8; 32] {
+        hashv(&[provider_name.as_bytes(), ":".as_bytes(), data.as_ref()])
             .to_bytes()
             .try_into()
             .unwrap()

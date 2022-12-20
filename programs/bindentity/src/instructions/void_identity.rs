@@ -13,11 +13,14 @@ pub struct VoidIdentityParams {
 #[derive(Accounts)]
 #[instruction(params: VoidIdentityParams)]
 pub struct VoidIdentity<'info> {
-    pub identity: Account<'info, Bindie>,
+    #[account(
+        constraint = bindie.provider.key() == provider.key(),
+    )]
+    pub bindie: Account<'info, Bindie>,
 
     #[account(
         mut,
-        constraint = link.identity.key() == identity.key(),
+        constraint = link.bindie.key() == bindie.key(),
     )]
     pub link: Account<'info, Link>,
 
@@ -56,7 +59,7 @@ pub struct VoidIdentity<'info> {
 /// 1. If the owner of the identity is also the signer
 /// 2. If the permitted validator checked that indeed the user is the owner of the ID
 pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
-    let identity = &ctx.accounts.identity;
+    let bindie = &ctx.accounts.bindie;
     let provider = &ctx.accounts.provider;
     let validator = &ctx.accounts.validator;
     let link = &mut ctx.accounts.link;
@@ -70,12 +73,12 @@ pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityPar
 
             let hash: [u8; 32] = Bindie::data_hash(&provider.name, &data);
 
-            if hash != identity.data {
+            if hash != bindie.data {
                 return Err(error!(CustomError::InvalidIdHash));
             }
         }
         None => {
-            if identity.owner.key() != signer.key() {
+            if bindie.owner.key() != signer.key() {
                 return Err(error!(CustomError::VoidUnauthorized));
             }
         }
