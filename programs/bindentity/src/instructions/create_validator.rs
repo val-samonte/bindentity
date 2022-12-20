@@ -49,6 +49,7 @@ pub fn create_validator_handler(
     validator.signer = params.signer.key();
     validator.provider = provider.key();
     provider.validator_count += 1;
+    provider.flags |= 16;
 
     Ok(())
 }

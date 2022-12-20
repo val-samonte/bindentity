@@ -50,6 +50,11 @@ pub fn update_validator_handler(
 
                 provider.validator_count -= 1;
 
+                if provider.validator_count == 0 {
+                    // remove `has validator` flag
+                    provider.flags &= 239;
+                }
+
                 return Ok(());
             }
         }

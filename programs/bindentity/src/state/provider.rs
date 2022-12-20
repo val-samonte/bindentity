@@ -13,6 +13,7 @@ pub struct Provider {
     /// * 2 - Published: Control flag set by the Provider's Owner which tells whether if it is usable or not.
     /// * 4 - Verified: Owner of this Provider account is verified through protocol's `provider` provider bindie.
     /// * 8 - Listed for sale: `validator_count` must be 0 and the provider should be unpublished.
+    /// * 16 - Has validator: for filter purposes, true if `validator_count` is greater than 0.
     pub flags: u8,
 
     /// Account that manages this identity provider. (32)
