@@ -123,7 +123,7 @@ pub fn create_bindie_handler(ctx: Context<CreateBindie>, params: CreateBindiePar
     link.bump = *ctx.bumps.get("link").unwrap();
     link.bindie = bindie.key();
 
-    bindie.bump = *ctx.bumps.get("identity").unwrap();
+    bindie.bump = *ctx.bumps.get("bindie").unwrap();
     bindie.owner = owner.key();
     bindie.provider = ctx.accounts.provider.key();
     bindie.timestamp = params.timestamp;

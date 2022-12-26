@@ -5,7 +5,7 @@ pub mod state;
 
 pub use instructions::*;
 
-declare_id!("6KDKFy7WjBegkyEsiFWMmcGFTMhNE811NcfCLeveAJrC");
+declare_id!("yNfRrT7mGC5xzN8V1numxqWzkKzGbZ8ug2tfu2C8jpv");
 
 #[program]
 pub mod bindentity {
@@ -62,8 +62,8 @@ pub mod bindentity {
         update_validator_handler(ctx, params)
     }
 
-    pub fn void_identity(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
-        void_identity_handler(ctx, params)
+    pub fn void_bindie(ctx: Context<VoidBindie>, params: VoidBindieParams) -> Result<()> {
+        void_bindie_handler(ctx, params)
     }
 }
 
@@ -72,7 +72,7 @@ pub enum CustomError {
     #[msg("Provider is unpublished")]
     ProviderUnpublished,
 
-    #[msg("Validator is not allowed to create an identity")]
+    #[msg("Validator is not allowed to create a bindie")]
     ValidatorDisabled,
 
     #[msg("Hash of the ID does not match")]

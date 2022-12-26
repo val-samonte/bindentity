@@ -165,6 +165,8 @@ describe('Provider Management', () => {
           registrationFee: null,
           treasury: null,
           uri: null,
+          forSale: null,
+          sellingPrice: null,
         })
         .accounts({
           authority: providerOwner.publicKey,
@@ -187,6 +189,7 @@ describe('Provider Management', () => {
       await program.methods
         .updateValidator({
           flags: validator.flags | 7,
+          close: null,
         })
         .accounts({
           authority: providerOwner.publicKey,
@@ -206,7 +209,7 @@ describe('Provider Management', () => {
     const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
     const [identityPda] = findProgramAddressSync(
       [
-        Buffer.from('identity', 'utf-8'),
+        Buffer.from('bindie', 'utf-8'),
         Buffer.from(timestamp + '', 'utf-8'),
         providerPda.toBytes(),
         data,
@@ -224,14 +227,14 @@ describe('Provider Management', () => {
 
     try {
       await program.methods
-        .createIdentity({
+        .createBindie({
           data,
           registrationFee: new BN(0),
           timestamp,
         })
         .accounts({
           global: globalPda,
-          identity: identityPda,
+          bindie: identityPda,
           link: linkPda,
           owner: user.publicKey,
           provider: providerPda,

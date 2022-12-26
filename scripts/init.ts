@@ -108,7 +108,6 @@ const init = async () => {
         .createProvider({
           name: bindentityName,
           providerTreasury: treasury.publicKey,
-          published: isPublished,
           registrationFee,
           uri: `https://shdw-drive.genesysgo.net/EQUAMGwdZNwhuZxXVFeVmxVYd3ZWMhL1TYFoM1WScLgQ/${bindentityName}.json`,
         })
@@ -123,8 +122,26 @@ const init = async () => {
 
       tx.add(providerIx)
 
-      // create validators for each published providers
       if (isPublished) {
+        const publishIx = await program.methods
+          .updateProvider({
+            flags: 3,
+            authority: null,
+            forSale: null,
+            registrationFee: null,
+            sellingPrice: null,
+            treasury: null,
+            uri: null,
+          })
+          .accounts({
+            authority: authority.publicKey,
+            provider: providerPda,
+          })
+          .instruction()
+
+        tx.add(publishIx)
+
+        // create validators for each published providers
         const [validatorPda] = findProgramAddressSync(
           [
             Buffer.from('validator', 'utf-8'),
@@ -175,9 +192,9 @@ const init = async () => {
     program.programId,
   )
 
-  const [identityPda] = findProgramAddressSync(
+  const [bindiePda] = findProgramAddressSync(
     [
-      Buffer.from('identity', 'utf-8'),
+      Buffer.from('bindie', 'utf-8'),
       Buffer.from(timestamp + '', 'utf-8'),
       verifierPda.toBytes(),
       authority.publicKey.toBytes(),
@@ -199,13 +216,13 @@ const init = async () => {
   if (!existingLink) {
     try {
       await program.methods
-        .createIdentity({
+        .createBindie({
           data: authority.publicKey.toBytes(),
           registrationFee: new BN(0),
           timestamp,
         })
         .accounts({
-          identity: identityPda,
+          bindie: bindiePda,
           link: linkPda,
           provider: verifierPda,
           providerTreasury: treasury.publicKey,
@@ -243,7 +260,7 @@ const init = async () => {
           .accounts({
             targetProvider: providerPda,
             owner: authority.publicKey,
-            ownerIdentity: existingLink ? existingLink.identity : identityPda,
+            ownerBindie: existingLink ? existingLink.bindie : bindiePda,
             ownerLink: linkPda,
             verifierProvider: verifierPda,
             validator: validatorPda,

@@ -7,7 +7,7 @@ mod update_config;
 mod update_provider;
 mod update_validator;
 mod verify_provider;
-mod void_identity;
+mod void_bindie;
 
 pub use buy_provider::*;
 pub use create_bindie::*;
@@ -18,4 +18,4 @@ pub use update_config::*;
 pub use update_provider::*;
 pub use update_validator::*;
 pub use verify_provider::*;
-pub use void_identity::*;
+pub use void_bindie::*;

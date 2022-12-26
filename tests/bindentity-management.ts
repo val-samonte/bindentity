@@ -98,7 +98,7 @@ describe('Bindentity Management', () => {
     }
   })
 
-  it('should register an bindentity', async () => {
+  it('should register a bindie', async () => {
     const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000))
     const params = {
       data: randomPhoneNumber,
@@ -106,9 +106,9 @@ describe('Bindentity Management', () => {
       registrationFee: null,
     }
 
-    const [identityPda] = findProgramAddressSync(
+    const [bindiePda] = findProgramAddressSync(
       [
-        Buffer.from('identity'),
+        Buffer.from('bindie'),
         Buffer.from(timestamp + ''),
         phoneProviderPda.toBytes(),
         randomPhoneNumber,
@@ -122,8 +122,7 @@ describe('Bindentity Management', () => {
     )
 
     const accounts = {
-      global: globalPda,
-      identity: identityPda,
+      bindie: bindiePda,
       link: linkPda,
       owner: owner.publicKey,
       provider: phoneProviderPda,
@@ -131,17 +130,18 @@ describe('Bindentity Management', () => {
       signer: validator.signer,
       treasury: global.treasury,
       validator: validatorPda,
+      global: globalPda,
       systemProgram: SystemProgram.programId,
     }
 
     try {
       await program.methods
-        .createIdentity(params)
+        .createBindie(params)
         .accounts(accounts)
         .signers([owner, validatorKp])
         .rpc()
 
-      const result = await program.account.identity.fetch(identityPda)
+      const result = await program.account.bindie.fetch(bindiePda)
       assert.ok(owner.publicKey.equals(result.owner))
     } catch (e) {
       console.log(e)
@@ -149,12 +149,13 @@ describe('Bindentity Management', () => {
     }
   })
 
-  it('data owner should be able to void an bindentity', async () => {
+  it('data owner should be able to void a bindentity', async () => {
     try {
       await program.methods
         .updateValidator({
           // allow validator to void
           flags: validator.flags | 4,
+          close: null,
         })
         .accounts({
           authority: phoneProvider.authority,
@@ -175,12 +176,12 @@ describe('Bindentity Management', () => {
 
     try {
       await program.methods
-        .voidIdentity({
+        .voidBindie({
           data: randomPhoneNumber,
         })
         .accounts({
           global: globalPda,
-          identity: link.identity,
+          bindie: link.bindie,
           link: linkPda,
           provider: phoneProviderPda,
           signer: program.provider.publicKey,
@@ -205,9 +206,9 @@ describe('Bindentity Management', () => {
       registrationFee: null,
     }
 
-    const [identityPda] = findProgramAddressSync(
+    const [bindiePda] = findProgramAddressSync(
       [
-        Buffer.from('identity'),
+        Buffer.from('bindie'),
         Buffer.from(timestamp + ''),
         phoneProviderPda.toBytes(),
         randomPhoneNumber,
@@ -222,7 +223,7 @@ describe('Bindentity Management', () => {
 
     const accounts = {
       global: globalPda,
-      identity: identityPda,
+      bindie: bindiePda,
       link: linkPda,
       owner: owner.publicKey,
       provider: phoneProviderPda,
@@ -235,12 +236,12 @@ describe('Bindentity Management', () => {
 
     try {
       await program.methods
-        .createIdentity(params)
+        .createBindie(params)
         .accounts(accounts)
         .signers([owner, validatorKp])
         .rpc()
 
-      const result = await program.account.identity.fetch(identityPda)
+      const result = await program.account.bindie.fetch(bindiePda)
       assert.ok(owner.publicKey.equals(result.owner))
     } catch (e) {
       console.log(e)
@@ -248,7 +249,7 @@ describe('Bindentity Management', () => {
     }
   })
 
-  it('owner should be able to void an identity using wallet', async () => {
+  it('owner should be able to void a bindie using wallet', async () => {
     const [linkPda] = findProgramAddressSync(
       [Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
       program.programId,
@@ -258,12 +259,12 @@ describe('Bindentity Management', () => {
 
     try {
       await program.methods
-        .voidIdentity({
+        .voidBindie({
           data: null,
         })
         .accounts({
           global: globalPda,
-          identity: link.identity,
+          bindie: link.bindie,
           link: linkPda,
           provider: phoneProviderPda,
           signer: owner.publicKey,

@@ -6,13 +6,13 @@ use crate::{
 };
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct VoidIdentityParams {
+pub struct VoidBindieParams {
     data: Option<Vec<u8>>,
 }
 
 #[derive(Accounts)]
-#[instruction(params: VoidIdentityParams)]
-pub struct VoidIdentity<'info> {
+#[instruction(params: VoidBindieParams)]
+pub struct VoidBindie<'info> {
     #[account(
         constraint = bindie.provider.key() == provider.key(),
     )]
@@ -58,7 +58,7 @@ pub struct VoidIdentity<'info> {
 /// An identity can be void in 2 ways:
 /// 1. If the owner of the identity is also the signer
 /// 2. If the permitted validator checked that indeed the user is the owner of the ID
-pub fn void_identity_handler(ctx: Context<VoidIdentity>, params: VoidIdentityParams) -> Result<()> {
+pub fn void_bindie_handler(ctx: Context<VoidBindie>, params: VoidBindieParams) -> Result<()> {
     let bindie = &ctx.accounts.bindie;
     let provider = &ctx.accounts.provider;
     let validator = &ctx.accounts.validator;
