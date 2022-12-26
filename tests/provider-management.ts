@@ -137,7 +137,7 @@ describe('Provider Management', () => {
     try {
       await program.methods
         .createValidator({
-          enabled: false,
+          enabled: true,
           signer: validatorSigner.publicKey,
         })
         .accounts({
@@ -154,7 +154,55 @@ describe('Provider Management', () => {
     }
   })
 
-  xit('should not allow the user to register when using a disabled provider', async () => {})
+  it('should not allow the user to register when using a unpublished provider', async () => {
+    // attempt to register
+    const data = Buffer.from('sample_user_id', 'utf-8')
+    const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
+    const [identityPda] = findProgramAddressSync(
+      [
+        Buffer.from('bindie', 'utf-8'),
+        Buffer.from(timestamp + '', 'utf-8'),
+        providerPda.toBytes(),
+        data,
+      ],
+      program.programId,
+    )
+
+    const [linkPda] = findProgramAddressSync(
+      [Buffer.from('link', 'utf-8'), providerPda.toBytes(), data],
+      program.programId,
+    )
+
+    const global = await program.account.global.fetch(globalPda)
+    const provider = await program.account.provider.fetch(providerPda)
+
+    try {
+      await program.methods
+        .createBindie({
+          data,
+          registrationFee: new BN(0),
+          timestamp,
+        })
+        .accounts({
+          global: globalPda,
+          bindie: identityPda,
+          link: linkPda,
+          owner: user.publicKey,
+          provider: providerPda,
+          providerTreasury: provider.treasury,
+          signer: validatorSigner.publicKey,
+          treasury: global.treasury,
+          validator: validatorPda,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([user, validatorSigner])
+        .rpc()
+
+      assert.ok(false)
+    } catch (e) {
+      // console.log(e)
+    }
+  })
 
   it('should update provider config', async () => {
     try {
@@ -180,7 +228,68 @@ describe('Provider Management', () => {
     }
   })
 
-  xit('should not allow the user to register when using a disabled validator', async () => {})
+  it('should not allow the user to register when using a disabled validator', async () => {
+    // disable validator
+    await program.methods
+      .updateValidator({
+        flags: 0,
+        close: null,
+      })
+      .accounts({
+        authority: providerOwner.publicKey,
+        provider: providerPda,
+        validator: validatorPda,
+      })
+      .signers([providerOwner])
+      .rpc()
+
+    const data = Buffer.from('sample_user_id', 'utf-8')
+    const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
+    const [identityPda] = findProgramAddressSync(
+      [
+        Buffer.from('bindie', 'utf-8'),
+        Buffer.from(timestamp + '', 'utf-8'),
+        providerPda.toBytes(),
+        data,
+      ],
+      program.programId,
+    )
+
+    const [linkPda] = findProgramAddressSync(
+      [Buffer.from('link', 'utf-8'), providerPda.toBytes(), data],
+      program.programId,
+    )
+
+    const global = await program.account.global.fetch(globalPda)
+    const provider = await program.account.provider.fetch(providerPda)
+
+    try {
+      await program.methods
+        .createBindie({
+          data,
+          registrationFee: new BN(0),
+          timestamp,
+        })
+        .accounts({
+          global: globalPda,
+          bindie: identityPda,
+          link: linkPda,
+          owner: user.publicKey,
+          provider: providerPda,
+          providerTreasury: provider.treasury,
+          signer: validatorSigner.publicKey,
+          treasury: global.treasury,
+          validator: validatorPda,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([user, validatorSigner])
+        .rpc()
+
+      assert.ok(false)
+    } catch (e) {
+      // console.log(e)
+    }
+  })
 
   it('should enable a validator', async () => {
     const validator = await program.account.validator.fetch(validatorPda)
