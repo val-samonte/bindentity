@@ -1,6 +1,6 @@
 use anchor_lang::{prelude::*, system_program};
 
-use crate::state::Provider;
+use crate::{state::Provider, CustomError};
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct BuyProviderParams {
@@ -14,7 +14,7 @@ pub struct BuyProviderParams {
 pub struct BuyProvider<'info> {
     #[account(
         mut,
-        constraint = provider.flags & 8 == 8,
+        constraint = (provider.flags & 8 == 8) @ CustomError::SellingNotAllowed,
         constraint = provider.authority.key() == seller.key()
     )]
     provider: Account<'info, Provider>,

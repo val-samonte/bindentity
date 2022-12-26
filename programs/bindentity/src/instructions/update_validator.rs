@@ -23,6 +23,7 @@ pub struct UpdateValidator<'info> {
     )]
     pub provider: Account<'info, Provider>,
 
+    #[account(mut)]
     pub authority: Signer<'info>,
 }
 
