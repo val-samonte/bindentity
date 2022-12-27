@@ -64,6 +64,7 @@ pub struct CreateBindie<'info> {
     pub provider_treasury: UncheckedAccount<'info>,
 
     #[account(
+        constraint = provider.flags & 1 == 1 @ CustomError::ProviderDisabled,
         constraint = provider.flags & 2 == 2 @ CustomError::ProviderUnpublished,
     )]
     pub provider: Box<Account<'info, Provider>>,

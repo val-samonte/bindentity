@@ -76,6 +76,9 @@ pub mod bindentity {
 
 #[error_code]
 pub enum CustomError {
+    #[msg("Provider is disabled")]
+    ProviderDisabled,
+
     #[msg("Provider is unpublished")]
     ProviderUnpublished,
 

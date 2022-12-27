@@ -101,19 +101,15 @@ describe('Provider Management', () => {
   })
 
   it('should create a new bindentity provider', async () => {
-    const params = {
-      name: bindentityName,
-      published: false,
-      registrationFee: new BN(0),
-      uri: '',
-      providerTreasury: providerOwner.publicKey,
-    }
-
     const global = await program.account.global.fetch(globalPda)
 
     try {
       await program.methods
-        .createProvider(params)
+        .createProvider({
+          name: bindentityName,
+          registrationFee: new BN(0),
+          providerTreasury: providerOwner.publicKey,
+        })
         .accounts({
           global: globalPda,
           owner: providerOwner.publicKey,
@@ -204,15 +200,47 @@ describe('Provider Management', () => {
     }
   })
 
+  it('should be able to add metadata to a provider', async () => {
+    const uri = `http://example.com`
+
+    const [providerMetadataPda] = findProgramAddressSync(
+      [Buffer.from('provider_metadata', 'utf-8'), providerPda.toBytes()],
+      program.programId,
+    )
+
+    try {
+      await program.methods
+        .createProviderMetadata({
+          uri,
+        })
+        .accounts({
+          authority: providerOwner.publicKey,
+          provider: providerPda,
+          providerMetadata: providerMetadataPda,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([providerOwner])
+        .rpc()
+
+      const metadata = await program.account.providerMetadata.fetch(
+        providerMetadataPda,
+      )
+
+      assert.ok(metadata.uri === uri)
+    } catch (e) {
+      console.log(e)
+      throw new Error(e)
+    }
+  })
+
   it('should update provider config', async () => {
     try {
       await program.methods
         .updateProvider({
-          flags: 2,
+          published: true,
           authority: null,
           registrationFee: null,
           treasury: null,
-          uri: null,
           forSale: null,
           sellingPrice: null,
         })

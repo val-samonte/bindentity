@@ -109,7 +109,6 @@ const init = async () => {
           name: bindentityName,
           providerTreasury: treasury.publicKey,
           registrationFee,
-          uri: `https://shdw-drive.genesysgo.net/EQUAMGwdZNwhuZxXVFeVmxVYd3ZWMhL1TYFoM1WScLgQ/${bindentityName}.json`,
         })
         .accounts({
           treasury: treasury.publicKey,
@@ -123,15 +122,33 @@ const init = async () => {
       tx.add(providerIx)
 
       if (isPublished) {
+        const [providerMetadataPda] = findProgramAddressSync(
+          [Buffer.from('provider_metadata', 'utf-8'), providerPda.toBytes()],
+          program.programId,
+        )
+
+        const metadataIx = await program.methods
+          .createProviderMetadata({
+            uri: `https://shdw-drive.genesysgo.net/EQUAMGwdZNwhuZxXVFeVmxVYd3ZWMhL1TYFoM1WScLgQ/${bindentityName}.json`,
+          })
+          .accounts({
+            authority: authority.publicKey,
+            provider: providerPda,
+            providerMetadata: providerMetadataPda,
+            systemProgram: SystemProgram.programId,
+          })
+          .instruction()
+
+        tx.add(metadataIx)
+
         const publishIx = await program.methods
           .updateProvider({
-            flags: 3,
+            published: true,
             authority: null,
             forSale: null,
             registrationFee: null,
             sellingPrice: null,
             treasury: null,
-            uri: null,
           })
           .accounts({
             authority: authority.publicKey,

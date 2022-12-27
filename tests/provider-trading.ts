@@ -110,7 +110,6 @@ describe('Provider Trading', () => {
         name: bindentityName,
         providerTreasury: providerOwner.publicKey,
         registrationFee: new BN(0),
-        uri: '',
       })
       .accounts({
         owner: providerOwner.publicKey,
@@ -130,7 +129,6 @@ describe('Provider Trading', () => {
         .buyProvider({
           providerTreasury: user.publicKey,
           registrationFee: new BN(0),
-          uri: '',
         })
         .accounts({
           seller: providerOwner.publicKey,
@@ -169,12 +167,11 @@ describe('Provider Trading', () => {
       await program.methods
         .updateProvider({
           forSale: true,
+          published: null,
           sellingPrice: new BN(LAMPORTS_PER_SOL / 1000),
-          flags: null,
           authority: null,
           registrationFee: null,
           treasury: null,
-          uri: null,
         })
         .accounts({
           authority: providerOwner.publicKey,
@@ -209,12 +206,11 @@ describe('Provider Trading', () => {
     await program.methods
       .updateProvider({
         forSale: true,
+        published: null,
         sellingPrice: new BN(LAMPORTS_PER_SOL / 1000),
-        flags: null,
         authority: null,
         registrationFee: null,
         treasury: null,
-        uri: null,
       })
       .accounts({
         authority: providerOwner.publicKey,
@@ -235,7 +231,6 @@ describe('Provider Trading', () => {
       .buyProvider({
         providerTreasury: user.publicKey,
         registrationFee: new BN(0),
-        uri: '',
       })
       .accounts({
         seller: providerOwner.publicKey,
