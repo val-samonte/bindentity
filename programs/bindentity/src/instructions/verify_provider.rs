@@ -61,7 +61,7 @@ pub fn verify_provider_handler(
 ) -> Result<()> {
     let target_provider = &mut ctx.accounts.target_provider;
 
-    target_provider.flags = target_provider.flags | 4;
+    target_provider.flags |= 4;
 
     Ok(())
 }

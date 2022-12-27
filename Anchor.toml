@@ -3,16 +3,16 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-bindentity = "yNfRrT7mGC5xzN8V1numxqWzkKzGbZ8ug2tfu2C8jpv"
+bindentity = "AKa2gimSHu5KWYoFLC4s9bVEN3MHvJgqKjEbw3YD887A"
 
 [programs.localnet]
-bindentity = "yNfRrT7mGC5xzN8V1numxqWzkKzGbZ8ug2tfu2C8jpv"
+bindentity = "AKa2gimSHu5KWYoFLC4s9bVEN3MHvJgqKjEbw3YD887A"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "http://localhost:8899/"
+cluster = "devnet"
 wallet = "./keys/authority.json"
 
 [scripts]

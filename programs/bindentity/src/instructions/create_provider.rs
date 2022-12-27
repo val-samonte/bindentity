@@ -6,7 +6,6 @@ use crate::state::{Global, Provider};
 pub struct CreateProviderParams {
     name: String,
     registration_fee: u64,
-    uri: String,
     provider_treasury: Pubkey,
 }
 
@@ -21,7 +20,7 @@ pub struct CreateProvider<'info> {
             params.name.as_bytes(),
         ],
         bump,
-        space = Provider::len(&params.name, &params.uri),
+        space = Provider::len(&params.name),
     )]
     pub provider: Account<'info, Provider>,
 
@@ -70,7 +69,6 @@ pub fn create_provider_handler(
     provider.validator_count = 0;
     provider.selling_price = 0;
     provider.name = params.name;
-    provider.uri = params.uri;
 
     Ok(())
 }

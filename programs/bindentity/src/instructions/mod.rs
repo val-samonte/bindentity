@@ -1,6 +1,7 @@
 mod buy_provider;
 mod create_bindie;
 mod create_provider;
+mod create_provider_metadata;
 mod create_validator;
 mod initialize;
 mod update_config;
@@ -12,6 +13,7 @@ mod void_bindie;
 pub use buy_provider::*;
 pub use create_bindie::*;
 pub use create_provider::*;
+pub use create_provider_metadata::*;
 pub use create_validator::*;
 pub use initialize::*;
 pub use update_config::*;

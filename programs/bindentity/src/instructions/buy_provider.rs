@@ -6,7 +6,6 @@ use crate::{state::Provider, CustomError};
 pub struct BuyProviderParams {
     provider_treasury: Pubkey,
     registration_fee: u64,
-    uri: String,
 }
 
 #[derive(Accounts)]
@@ -52,7 +51,6 @@ pub fn buy_provider_handler(ctx: Context<BuyProvider>, params: BuyProviderParams
     provider.registration_fee = params.registration_fee;
     provider.validator_count = 0;
     provider.selling_price = 0;
-    provider.uri = params.uri;
 
     Ok(())
 }

@@ -5,7 +5,7 @@ pub mod state;
 
 pub use instructions::*;
 
-declare_id!("yNfRrT7mGC5xzN8V1numxqWzkKzGbZ8ug2tfu2C8jpv");
+declare_id!("AKa2gimSHu5KWYoFLC4s9bVEN3MHvJgqKjEbw3YD887A");
 
 #[program]
 pub mod bindentity {
@@ -24,6 +24,13 @@ pub mod bindentity {
         params: CreateProviderParams,
     ) -> Result<()> {
         create_provider_handler(ctx, params)
+    }
+
+    pub fn create_provider_metadata(
+        ctx: Context<CreateProviderMetadata>,
+        params: CreateProviderMetadataParams,
+    ) -> Result<()> {
+        create_provider_metadata_handler(ctx, params)
     }
 
     pub fn create_validator(

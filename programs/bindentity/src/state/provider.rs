@@ -14,7 +14,8 @@ pub struct Provider {
     /// * 4 - Verified: Owner of this Provider account is verified through protocol's `provider` provider bindie.
     /// * 8 - Listed for sale: `validator_count` must be 0 and the provider should be unpublished.
     /// * 16 - Has validator: for filter purposes, true if `validator_count` is greater than 0.
-    pub flags: u8,
+    /// * 32 - Has metadata
+    pub flags: u16,
 
     /// Account that manages this identity provider. (32)
     pub authority: Pubkey,
@@ -33,25 +34,15 @@ pub struct Provider {
     /// Note that the `validator_count` must be 0 in order for this provider to be listed.
     pub selling_price: u64,
 
-    /// The unique name of the provider (eg. email, phone, metamask, ph_national_id). (Varies)
-    pub name: String,
-
-    /// URI which stores off chain details in JSON: (Varies)
-    ///
-    /// * `name: string` (the user friendly name of the id)
-    /// * `description: string`
-    /// * `image: string`
-    /// * `tags: string[]` (for filter purposes, common tags are: country code, utility, type of ID)
-    /// * `website: string` (url of the marketing website)
-    /// * `registration_url: string` (important! url to redirect the user when availing the provider's service)
-    pub uri: String,
-
     /// Unused reserved byte space for future additive changes. (32)
     pub _reserved: [u8; 32],
+
+    /// The unique name of the provider (eg. email, phone, metamask, ph_national_id). (Varies)
+    pub name: String,
 }
 
 impl Provider {
-    pub fn len(name: &String, uri: &String) -> usize {
-        8 + 1 + 1 + 32 + 32 + 8 + 4 + 8 + (4 + name.len()) + (4 + uri.len()) + 32
+    pub fn len(name: &String) -> usize {
+        8 + 1 + 2 + 32 + 32 + 8 + 4 + 8 + 32 + (4 + name.len())
     }
 }
