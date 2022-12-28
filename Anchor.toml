@@ -12,7 +12,7 @@ bindentity = "AKa2gimSHu5KWYoFLC4s9bVEN3MHvJgqKjEbw3YD887A"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "http://localhost:8899/"
+cluster = "devnet"
 wallet = "./keys/authority.json"
 
 [scripts]
