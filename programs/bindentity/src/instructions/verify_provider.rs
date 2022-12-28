@@ -4,7 +4,7 @@ use crate::state::{Bindie, Link, Provider, Validator};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct VerifyProviderParams {
-    pub data: Vec<u8>,
+    pub data: String,
 }
 
 #[derive(Accounts)]
@@ -35,7 +35,7 @@ pub struct VerifyProvider<'info> {
             "bindie".as_bytes(),
             owner_bindie.timestamp.to_string().as_bytes(),
             verifier_provider.key().as_ref(),
-            params.data.as_ref(),
+            Bindie::crop(&params.data).as_bytes(),
         ],
         bump = owner_bindie.bump
     )]

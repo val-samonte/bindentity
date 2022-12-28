@@ -7,8 +7,9 @@ use crate::{
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateBindieParams {
-    data: Vec<u8>,
+    data: String,
     timestamp: u64,
+    encryption_count: u8,
     registration_fee: Option<u64>,
 }
 
@@ -22,10 +23,16 @@ pub struct CreateBindie<'info> {
             "bindie".as_bytes(),
             params.timestamp.to_string().as_bytes(),
             provider.key().as_ref(),
-            params.data.as_ref(),
+            Bindie::crop(&params.data).as_bytes(),
         ],
         bump,
-        space = Bindie::len(),
+        space = Bindie::len(
+            if params.encryption_count == 0 {
+                params.data.clone()
+            } else {
+                Bindie::data_hash(&provider.name, &params.data)
+            }    
+        ),
     )]
     pub bindie: Box<Account<'info, Bindie>>,
 
@@ -35,7 +42,7 @@ pub struct CreateBindie<'info> {
         seeds = [
             "link".as_bytes(),
             provider.key().as_ref(),
-            params.data.as_ref(),
+            Bindie::crop(&params.data).as_bytes(),
         ],
         bump,
         space = Link::len(),
@@ -128,7 +135,11 @@ pub fn create_bindie_handler(ctx: Context<CreateBindie>, params: CreateBindiePar
     bindie.owner = owner.key();
     bindie.provider = ctx.accounts.provider.key();
     bindie.timestamp = params.timestamp;
-    bindie.data = Bindie::data_hash(&provider.name, &params.data);
+    bindie.data = if params.encryption_count == 0 {
+        params.data
+    } else {
+        Bindie::data_hash(&provider.name, &params.data)
+    };
 
     Ok(())
 }

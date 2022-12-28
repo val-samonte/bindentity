@@ -214,7 +214,7 @@ const init = async () => {
       Buffer.from('bindie', 'utf-8'),
       Buffer.from(timestamp + '', 'utf-8'),
       verifierPda.toBytes(),
-      authority.publicKey.toBytes(),
+      Buffer.from(authority.publicKey.toBase58().substring(0, 32), 'utf-8'),
     ],
     program.programId,
   )
@@ -223,7 +223,7 @@ const init = async () => {
     [
       Buffer.from('link', 'utf-8'),
       verifierPda.toBytes(),
-      authority.publicKey.toBytes(),
+      Buffer.from(authority.publicKey.toBase58().substring(0, 32), 'utf-8'),
     ],
     program.programId,
   )
@@ -234,7 +234,8 @@ const init = async () => {
     try {
       await program.methods
         .createBindie({
-          data: authority.publicKey.toBytes(),
+          encryptionCount: 0,
+          data: authority.publicKey.toBase58(),
           registrationFee: new BN(0),
           timestamp,
         })
@@ -272,7 +273,7 @@ const init = async () => {
 
         return program.methods
           .verifyProvider({
-            data: authority.publicKey.toBytes(),
+            data: authority.publicKey.toBase58(),
           })
           .accounts({
             targetProvider: providerPda,

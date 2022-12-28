@@ -100,11 +100,6 @@ describe('Bindentity Management', () => {
 
   it('should register a bindie', async () => {
     const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000))
-    const params = {
-      data: randomPhoneNumber,
-      timestamp,
-      registrationFee: null,
-    }
 
     const [bindiePda] = findProgramAddressSync(
       [
@@ -136,7 +131,12 @@ describe('Bindentity Management', () => {
 
     try {
       await program.methods
-        .createBindie(params)
+        .createBindie({
+          encryptionCount: 1,
+          data: randomPhoneNumber,
+          timestamp,
+          registrationFee: null,
+        })
         .accounts(accounts)
         .signers([owner, validatorKp])
         .rpc()
@@ -200,11 +200,6 @@ describe('Bindentity Management', () => {
 
   it('should renew the same identity after getting void', async () => {
     const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000))
-    const params = {
-      data: randomPhoneNumber,
-      timestamp,
-      registrationFee: null,
-    }
 
     const [bindiePda] = findProgramAddressSync(
       [
@@ -236,7 +231,12 @@ describe('Bindentity Management', () => {
 
     try {
       await program.methods
-        .createBindie(params)
+        .createBindie({
+          encryptionCount: 1,
+          data: randomPhoneNumber,
+          timestamp,
+          registrationFee: null,
+        })
         .accounts(accounts)
         .signers([owner, validatorKp])
         .rpc()

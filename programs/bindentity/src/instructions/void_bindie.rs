@@ -7,7 +7,7 @@ use crate::{
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct VoidBindieParams {
-    data: Option<Vec<u8>>,
+    data: Option<String>,
 }
 
 #[derive(Accounts)]
@@ -71,10 +71,12 @@ pub fn void_bindie_handler(ctx: Context<VoidBindie>, params: VoidBindieParams) -
                 return Err(error!(CustomError::VoidUnauthorized));
             }
 
-            let hash: [u8; 32] = Bindie::data_hash(&provider.name, &data);
+            if bindie.encryption_count != 0 {
+                let hash = Bindie::data_hash(&provider.name, &data);
 
-            if hash != bindie.data {
-                return Err(error!(CustomError::InvalidIdHash));
+                if hash != bindie.data {
+                    return Err(error!(CustomError::InvalidDataHash));
+                }
             }
         }
         None => {

@@ -5,7 +5,7 @@ pub mod state;
 
 pub use instructions::*;
 
-declare_id!("AKa2gimSHu5KWYoFLC4s9bVEN3MHvJgqKjEbw3YD887A");
+declare_id!("3XNHaUkdcLNFKydAhtxhEtg2f9fmWi5Ggm4oUt8Yzy5N");
 
 #[program]
 pub mod bindentity {
@@ -85,8 +85,8 @@ pub enum CustomError {
     #[msg("Validator is not allowed to create a bindie")]
     ValidatorDisabled,
 
-    #[msg("Hash of the ID does not match")]
-    InvalidIdHash,
+    #[msg("Hash of the data does not match")]
+    InvalidDataHash,
 
     #[msg("Signers are not authorized to void")]
     VoidUnauthorized,

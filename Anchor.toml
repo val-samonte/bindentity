@@ -3,10 +3,10 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-bindentity = "AKa2gimSHu5KWYoFLC4s9bVEN3MHvJgqKjEbw3YD887A"
+bindentity = "3XNHaUkdcLNFKydAhtxhEtg2f9fmWi5Ggm4oUt8Yzy5N"
 
 [programs.localnet]
-bindentity = "AKa2gimSHu5KWYoFLC4s9bVEN3MHvJgqKjEbw3YD887A"
+bindentity = "3XNHaUkdcLNFKydAhtxhEtg2f9fmWi5Ggm4oUt8Yzy5N"
 
 [registry]
 url = "https://api.apr.dev"

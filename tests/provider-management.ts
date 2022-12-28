@@ -152,20 +152,24 @@ describe('Provider Management', () => {
 
   it('should not allow the user to register when using a unpublished provider', async () => {
     // attempt to register
-    const data = Buffer.from('sample_user_id', 'utf-8')
+    const data = 'sample_user_id'
     const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
     const [identityPda] = findProgramAddressSync(
       [
         Buffer.from('bindie', 'utf-8'),
         Buffer.from(timestamp + '', 'utf-8'),
         providerPda.toBytes(),
-        data,
+        Buffer.from(data, 'utf-8'),
       ],
       program.programId,
     )
 
     const [linkPda] = findProgramAddressSync(
-      [Buffer.from('link', 'utf-8'), providerPda.toBytes(), data],
+      [
+        Buffer.from('link', 'utf-8'),
+        providerPda.toBytes(),
+        Buffer.from(data, 'utf-8'),
+      ],
       program.programId,
     )
 
@@ -176,6 +180,7 @@ describe('Provider Management', () => {
       await program.methods
         .createBindie({
           data,
+          encryptionCount: 0,
           registrationFee: new BN(0),
           timestamp,
         })
@@ -271,20 +276,24 @@ describe('Provider Management', () => {
       .signers([providerOwner])
       .rpc()
 
-    const data = Buffer.from('sample_user_id', 'utf-8')
+    const data = 'sample_user_id'
     const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
     const [identityPda] = findProgramAddressSync(
       [
         Buffer.from('bindie', 'utf-8'),
         Buffer.from(timestamp + '', 'utf-8'),
         providerPda.toBytes(),
-        data,
+        Buffer.from(data, 'utf-8'),
       ],
       program.programId,
     )
 
     const [linkPda] = findProgramAddressSync(
-      [Buffer.from('link', 'utf-8'), providerPda.toBytes(), data],
+      [
+        Buffer.from('link', 'utf-8'),
+        providerPda.toBytes(),
+        Buffer.from(data, 'utf-8'),
+      ],
       program.programId,
     )
 
@@ -295,6 +304,7 @@ describe('Provider Management', () => {
       await program.methods
         .createBindie({
           data,
+          encryptionCount: 0,
           registrationFee: new BN(0),
           timestamp,
         })
@@ -342,20 +352,24 @@ describe('Provider Management', () => {
   })
 
   it('should allow user to register to the new bindentity', async () => {
-    const data = Buffer.from('sample_user_id', 'utf-8')
+    const data = 'sample_user_id'
     const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
     const [identityPda] = findProgramAddressSync(
       [
         Buffer.from('bindie', 'utf-8'),
         Buffer.from(timestamp + '', 'utf-8'),
         providerPda.toBytes(),
-        data,
+        Buffer.from(data, 'utf-8'),
       ],
       program.programId,
     )
 
     const [linkPda] = findProgramAddressSync(
-      [Buffer.from('link', 'utf-8'), providerPda.toBytes(), data],
+      [
+        Buffer.from('link', 'utf-8'),
+        providerPda.toBytes(),
+        Buffer.from(data, 'utf-8'),
+      ],
       program.programId,
     )
 
@@ -366,6 +380,7 @@ describe('Provider Management', () => {
       await program.methods
         .createBindie({
           data,
+          encryptionCount: 0,
           registrationFee: new BN(0),
           timestamp,
         })
