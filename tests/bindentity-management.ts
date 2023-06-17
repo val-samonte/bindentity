@@ -5,6 +5,7 @@ import { Keypair, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js'
 import { Bindentity } from '../target/types/bindentity'
 import { assert } from 'chai'
 import validatorJSON from '../keys/validator.json'
+import { airdrop } from '../scripts/utils'
 
 describe('Bindentity Management', () => {
   anchor.setProvider(anchor.AnchorProvider.env())
@@ -79,23 +80,7 @@ describe('Bindentity Management', () => {
       Math.floor(Math.random() * 100_000_000_000) + '',
     )
 
-    try {
-      const connection = program.provider.connection
-      const latestBlockHash = await connection.getLatestBlockhash()
-      const signature = await connection.requestAirdrop(
-        owner.publicKey,
-        LAMPORTS_PER_SOL,
-      )
-
-      await connection.confirmTransaction({
-        blockhash: latestBlockHash.blockhash,
-        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-        signature,
-      })
-    } catch (e) {
-      console.log(e)
-      throw new Error(e)
-    }
+    await airdrop(program.provider.connection, owner.publicKey)
   })
 
   it('should register a bindie', async () => {

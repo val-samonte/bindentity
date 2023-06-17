@@ -11,6 +11,7 @@ import {
 import { BN } from 'bn.js'
 import { assert } from 'chai'
 import { Bindentity } from '../target/types/bindentity'
+import { airdrop } from '../scripts/utils'
 
 describe('Provider Management', () => {
   anchor.setProvider(anchor.AnchorProvider.env())
@@ -44,42 +45,9 @@ describe('Provider Management', () => {
   before(async () => {
     const connection = program.provider.connection
 
-    // provider creation fee is 1 SOL, and we can only request 1 SOL airdrop at a time
-    // airdrop 1
-    try {
-      const latestBlockHash = await connection.getLatestBlockhash()
-      const signature = await connection.requestAirdrop(
-        providerOwner.publicKey,
-        LAMPORTS_PER_SOL,
-      )
-
-      await connection.confirmTransaction({
-        blockhash: latestBlockHash.blockhash,
-        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-        signature,
-      })
-    } catch (e) {
-      console.log(e)
-      throw new Error(e)
-    }
-
-    // airdrop 2
-    try {
-      const latestBlockHash = await connection.getLatestBlockhash()
-      const signature = await connection.requestAirdrop(
-        providerOwner.publicKey,
-        LAMPORTS_PER_SOL,
-      )
-
-      await connection.confirmTransaction({
-        blockhash: latestBlockHash.blockhash,
-        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-        signature,
-      })
-    } catch (e) {
-      console.log(e)
-      throw new Error(e)
-    }
+    // provider creation fee is 1 SOL, so we need more than 1 SOL
+    await airdrop(connection, providerOwner.publicKey)
+    await airdrop(connection, providerOwner.publicKey)
 
     // send a few funds to the user who will avail the bindentity
     try {
