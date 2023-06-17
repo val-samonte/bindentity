@@ -5,30 +5,40 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
+  VersionedTransaction,
   sendAndConfirmTransaction,
 } from '@solana/web3.js'
 import authorityJSON from '../keys/authority.json'
+import { Wallet } from '@coral-xyz/anchor'
+import { isVersionedTransaction } from '@coral-xyz/anchor/dist/cjs/utils/common'
 
 const authority = Keypair.fromSecretKey(new Uint8Array(authorityJSON))
 
-export interface AnchorWallet {
-  publicKey: PublicKey
-  signTransaction(transaction: Transaction): Promise<Transaction>
-  signAllTransactions(transactions: Transaction[]): Promise<Transaction[]>
-}
-
-export class KeypairWallet implements AnchorWallet {
+export class KeypairWallet implements Wallet {
   constructor(readonly payer: Keypair) {}
 
-  async signTransaction(tx: Transaction): Promise<Transaction> {
-    tx.partialSign(this.payer)
+  async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T,
+  ): Promise<T> {
+    if (isVersionedTransaction(tx)) {
+      tx.sign([this.payer])
+    } else {
+      tx.partialSign(this.payer)
+    }
+
     return tx
   }
 
-  async signAllTransactions(txs: Transaction[]): Promise<Transaction[]> {
-    return txs.map((tx) => {
-      tx.partialSign(this.payer)
-      return tx
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: T[],
+  ): Promise<T[]> {
+    return txs.map((t) => {
+      if (isVersionedTransaction(t)) {
+        t.sign([this.payer])
+      } else {
+        t.partialSign(this.payer)
+      }
+      return t
     })
   }
 

@@ -1,8 +1,8 @@
-import * as anchor from '@project-serum/anchor'
-import { AnchorError, Program } from '@project-serum/anchor'
-import { findProgramAddressSync } from '@project-serum/anchor/dist/cjs/utils/pubkey'
+import * as anchor from '@coral-xyz/anchor'
+import { AnchorError, Program } from '@coral-xyz/anchor'
 import {
   Keypair,
+  PublicKey,
   LAMPORTS_PER_SOL,
   sendAndConfirmTransaction,
   SystemProgram,
@@ -18,7 +18,7 @@ describe('Provider Trading', () => {
 
   const program = anchor.workspace.Bindentity as Program<Bindentity>
 
-  const [globalPda] = findProgramAddressSync(
+  const [globalPda] = PublicKey.findProgramAddressSync(
     [Buffer.from('global')],
     program.programId,
   )
@@ -28,12 +28,12 @@ describe('Provider Trading', () => {
   const user = Keypair.generate()
   const bindentityName = 'sample_' + Math.floor(Math.random() * 100_000_000)
 
-  const [providerPda] = findProgramAddressSync(
+  const [providerPda] = PublicKey.findProgramAddressSync(
     [Buffer.from('provider'), Buffer.from(bindentityName, 'utf-8')],
     program.programId,
   )
 
-  const [validatorPda] = findProgramAddressSync(
+  const [validatorPda] = PublicKey.findProgramAddressSync(
     [
       Buffer.from('validator'),
       providerPda.toBytes(),

@@ -1,7 +1,6 @@
-import * as anchor from '@project-serum/anchor'
-import { Program } from '@project-serum/anchor'
-import { findProgramAddressSync } from '@project-serum/anchor/dist/cjs/utils/pubkey'
-import { Keypair, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js'
+import * as anchor from '@coral-xyz/anchor'
+import { Program } from '@coral-xyz/anchor'
+import { Keypair, SystemProgram, PublicKey } from '@solana/web3.js'
 import { Bindentity } from '../target/types/bindentity'
 import { assert } from 'chai'
 import validatorJSON from '../keys/validator.json'
@@ -13,7 +12,7 @@ describe('Bindentity Management', () => {
   const program = anchor.workspace.Bindentity as Program<Bindentity>
   const validatorKp = Keypair.fromSecretKey(new Uint8Array(validatorJSON))
 
-  const [globalPda] = findProgramAddressSync(
+  const [globalPda] = PublicKey.findProgramAddressSync(
     [Buffer.from('global')],
     program.programId,
   )
@@ -35,7 +34,7 @@ describe('Bindentity Management', () => {
       )
     }
 
-    const [_phoneProviderPda] = findProgramAddressSync(
+    const [_phoneProviderPda] = PublicKey.findProgramAddressSync(
       [Buffer.from('provider'), Buffer.from('phone')],
       program.programId,
     )
@@ -86,7 +85,7 @@ describe('Bindentity Management', () => {
   it('should register a bindie', async () => {
     const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000))
 
-    const [bindiePda] = findProgramAddressSync(
+    const [bindiePda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('bindie'),
         Buffer.from(timestamp + ''),
@@ -96,7 +95,7 @@ describe('Bindentity Management', () => {
       program.programId,
     )
 
-    const [linkPda] = findProgramAddressSync(
+    const [linkPda] = PublicKey.findProgramAddressSync(
       [Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
       program.programId,
     )
@@ -152,7 +151,7 @@ describe('Bindentity Management', () => {
       console.log(e)
     }
 
-    const [linkPda] = findProgramAddressSync(
+    const [linkPda] = PublicKey.findProgramAddressSync(
       [Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
       program.programId,
     )
@@ -186,7 +185,7 @@ describe('Bindentity Management', () => {
   it('should renew the same identity after getting void', async () => {
     const timestamp = new anchor.BN(Math.floor(new Date().getTime() / 1000))
 
-    const [bindiePda] = findProgramAddressSync(
+    const [bindiePda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('bindie'),
         Buffer.from(timestamp + ''),
@@ -196,7 +195,7 @@ describe('Bindentity Management', () => {
       program.programId,
     )
 
-    const [linkPda] = findProgramAddressSync(
+    const [linkPda] = PublicKey.findProgramAddressSync(
       [Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
       program.programId,
     )
@@ -235,7 +234,7 @@ describe('Bindentity Management', () => {
   })
 
   it('owner should be able to void a bindie using wallet', async () => {
-    const [linkPda] = findProgramAddressSync(
+    const [linkPda] = PublicKey.findProgramAddressSync(
       [Buffer.from('link'), phoneProviderPda.toBytes(), randomPhoneNumber],
       program.programId,
     )

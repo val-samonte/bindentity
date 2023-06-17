@@ -1,5 +1,5 @@
-import { AnchorProvider, BN, Program } from '@project-serum/anchor'
-import { findProgramAddressSync } from '@project-serum/anchor/dist/cjs/utils/pubkey'
+import { AnchorProvider, BN, Program } from '@coral-xyz/anchor'
+// import { findProgramAddressSync } from '@coral-xyz/anchor/dist/cjs/utils/pubkey'
 import {
   Keypair,
   LAMPORTS_PER_SOL,
@@ -34,12 +34,15 @@ const program = new Program<Bindentity>(
   ),
 )
 
-const [programDataPda] = findProgramAddressSync(
+const [programDataPda] = PublicKey.findProgramAddressSync(
   [programId.toBytes()],
   new PublicKey('BPFLoaderUpgradeab1e11111111111111111111111'),
 )
 
-const [globalPda] = findProgramAddressSync([Buffer.from('global')], programId)
+const [globalPda] = PublicKey.findProgramAddressSync(
+  [Buffer.from('global')],
+  programId,
+)
 
 const officialProviders = [
   'phone',
@@ -96,7 +99,7 @@ const init = async () => {
       )
       const tx = new Transaction()
 
-      const [providerPda] = findProgramAddressSync(
+      const [providerPda] = PublicKey.findProgramAddressSync(
         [
           Buffer.from('provider', 'utf-8'),
           Buffer.from(bindentityName, 'utf-8'),
@@ -122,7 +125,7 @@ const init = async () => {
       tx.add(providerIx)
 
       if (isPublished) {
-        const [providerMetadataPda] = findProgramAddressSync(
+        const [providerMetadataPda] = PublicKey.findProgramAddressSync(
           [Buffer.from('provider_metadata', 'utf-8'), providerPda.toBytes()],
           program.programId,
         )
@@ -159,7 +162,7 @@ const init = async () => {
         tx.add(publishIx)
 
         // create validators for each published providers
-        const [validatorPda] = findProgramAddressSync(
+        const [validatorPda] = PublicKey.findProgramAddressSync(
           [
             Buffer.from('validator', 'utf-8'),
             providerPda.toBytes(),
@@ -195,12 +198,12 @@ const init = async () => {
   // make authority a verified provider
   const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
 
-  const [verifierPda] = findProgramAddressSync(
+  const [verifierPda] = PublicKey.findProgramAddressSync(
     [Buffer.from('provider', 'utf-8'), Buffer.from('provider', 'utf-8')],
     program.programId,
   )
 
-  const [validatorPda] = findProgramAddressSync(
+  const [validatorPda] = PublicKey.findProgramAddressSync(
     [
       Buffer.from('validator', 'utf-8'),
       verifierPda.toBytes(),
@@ -209,7 +212,7 @@ const init = async () => {
     program.programId,
   )
 
-  const [bindiePda] = findProgramAddressSync(
+  const [bindiePda] = PublicKey.findProgramAddressSync(
     [
       Buffer.from('bindie', 'utf-8'),
       Buffer.from(timestamp + '', 'utf-8'),
@@ -219,7 +222,7 @@ const init = async () => {
     program.programId,
   )
 
-  const [linkPda] = findProgramAddressSync(
+  const [linkPda] = PublicKey.findProgramAddressSync(
     [
       Buffer.from('link', 'utf-8'),
       verifierPda.toBytes(),
@@ -263,7 +266,7 @@ const init = async () => {
   try {
     await Promise.all(
       officialProviders.map(async (bindentityName) => {
-        const [providerPda] = findProgramAddressSync(
+        const [providerPda] = PublicKey.findProgramAddressSync(
           [
             Buffer.from('provider', 'utf-8'),
             Buffer.from(bindentityName, 'utf-8'),

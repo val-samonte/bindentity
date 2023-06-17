@@ -1,8 +1,8 @@
-import * as anchor from '@project-serum/anchor'
-import { Program } from '@project-serum/anchor'
-import { findProgramAddressSync } from '@project-serum/anchor/dist/cjs/utils/pubkey'
+import * as anchor from '@coral-xyz/anchor'
+import { Program } from '@coral-xyz/anchor'
 import {
   Keypair,
+  PublicKey,
   LAMPORTS_PER_SOL,
   sendAndConfirmTransaction,
   SystemProgram,
@@ -18,7 +18,7 @@ describe('Provider Management', () => {
 
   const program = anchor.workspace.Bindentity as Program<Bindentity>
 
-  const [globalPda] = findProgramAddressSync(
+  const [globalPda] = PublicKey.findProgramAddressSync(
     [Buffer.from('global')],
     program.programId,
   )
@@ -28,12 +28,12 @@ describe('Provider Management', () => {
   const user = Keypair.generate()
   const bindentityName = 'sample_' + Math.floor(Math.random() * 100_000_000)
 
-  const [providerPda] = findProgramAddressSync(
+  const [providerPda] = PublicKey.findProgramAddressSync(
     [Buffer.from('provider'), Buffer.from(bindentityName, 'utf-8')],
     program.programId,
   )
 
-  const [validatorPda] = findProgramAddressSync(
+  const [validatorPda] = PublicKey.findProgramAddressSync(
     [
       Buffer.from('validator'),
       providerPda.toBytes(),
@@ -122,7 +122,7 @@ describe('Provider Management', () => {
     // attempt to register
     const data = 'sample_user_id'
     const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
-    const [identityPda] = findProgramAddressSync(
+    const [identityPda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('bindie', 'utf-8'),
         Buffer.from(timestamp + '', 'utf-8'),
@@ -132,7 +132,7 @@ describe('Provider Management', () => {
       program.programId,
     )
 
-    const [linkPda] = findProgramAddressSync(
+    const [linkPda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('link', 'utf-8'),
         providerPda.toBytes(),
@@ -176,7 +176,7 @@ describe('Provider Management', () => {
   it('should be able to add metadata to a provider', async () => {
     const uri = `http://example.com`
 
-    const [providerMetadataPda] = findProgramAddressSync(
+    const [providerMetadataPda] = PublicKey.findProgramAddressSync(
       [Buffer.from('provider_metadata', 'utf-8'), providerPda.toBytes()],
       program.programId,
     )
@@ -246,7 +246,7 @@ describe('Provider Management', () => {
 
     const data = 'sample_user_id'
     const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
-    const [identityPda] = findProgramAddressSync(
+    const [identityPda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('bindie', 'utf-8'),
         Buffer.from(timestamp + '', 'utf-8'),
@@ -256,7 +256,7 @@ describe('Provider Management', () => {
       program.programId,
     )
 
-    const [linkPda] = findProgramAddressSync(
+    const [linkPda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('link', 'utf-8'),
         providerPda.toBytes(),
@@ -322,7 +322,7 @@ describe('Provider Management', () => {
   it('should allow user to register to the new bindentity', async () => {
     const data = 'sample_user_id'
     const timestamp = new BN(Math.floor(new Date().getTime() / 1000))
-    const [identityPda] = findProgramAddressSync(
+    const [identityPda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('bindie', 'utf-8'),
         Buffer.from(timestamp + '', 'utf-8'),
@@ -332,7 +332,7 @@ describe('Provider Management', () => {
       program.programId,
     )
 
-    const [linkPda] = findProgramAddressSync(
+    const [linkPda] = PublicKey.findProgramAddressSync(
       [
         Buffer.from('link', 'utf-8'),
         providerPda.toBytes(),
